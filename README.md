@@ -3,7 +3,7 @@ Parse your m3u VOD list and make a .strm library for media server
 
 Docker Compose Example
 
-```
+```compose example
 version: '3'
 
 services:
