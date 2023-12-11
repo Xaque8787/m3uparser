@@ -11,7 +11,7 @@ services:
     image: xaque87/m3uparser
     environment:
       - VOD_URL=<YOUR_IPT_VOD_M3U_URL>
-      - HOURS=12 #update interval, setting this optional, defaults to 12hrs if you ommit this line, suggest not going below 6hrs.
+      - HOURS=12 #update interval, setting this optional, defaults to 12hrs if you omit this line, suggest not going below 6hrs.
     volumes:
       - /path/to/your/media/library:/VODS
 
@@ -41,4 +41,4 @@ That will create the TV VOD and Movie VOD folders in the media folder,
 and then add those as either new libraries to your media server, or, using jellyfin as an example,
 edit your current TV Show and Movie library to include those VOD folders.
 
-I myself seperate my VOD .strm library from my digital library. As in, in my jellyfin server I have each a Movies, TV Shows, Movie VOD, TV VOD library. This allows some flexability if for some reason a VOD library needs to be rebuilt or something goes wrong, it doesnt affect my non .strm library.
+I myself separate my VOD .strm library from my digital library. As in, in my jellyfin server I have each a Movies, TV Shows, Movie VOD, TV VOD library. This allows some flexibility if for some reason a VOD library needs to be rebuilt or something goes wrong, it doesnt affect my non .strm library.
