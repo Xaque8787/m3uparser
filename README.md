@@ -11,7 +11,7 @@ services:
     image: xaque87/m3uparser
     environment:
       - VOD_URL=<YOUR_IPT_VOD_M3U_URL>
-      - HOURS=12 #optional, defaults to 12hrs if you ommit this line, suggest not going below 6hrs.
+      - HOURS=12 #update interval, setting this optional, defaults to 12hrs if you ommit this line, suggest not going below 6hrs.
     volumes:
       - /path/to/your/media/library:/VODS
 
