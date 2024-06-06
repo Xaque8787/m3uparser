@@ -13,7 +13,7 @@ services:
       - VOD_URL=<YOUR_IPT_VOD_M3U_URL>
       - HOURS=12 #update interval, setting this optional, defaults to 12hrs if you omit this line, suggest not going below 6hrs.
     volumes:
-      - /path/to/your/media/library:/VODS
+      - /path/to/your/media/library:/usr/src/app/VODS
 
 ```
 # Additional Options
