@@ -24,7 +24,7 @@ you can also map the Movie VOD and the TV VOD to existing folders.
 For example, if your current jellyfin server has a mapped volume like this:
 /home/user/media/tvshows:/tvshows and one for movies like /home/user/media/movies:/movies
 You could use this for your m3uparser volume mounts:
-"/home/user/media/tvshows/:/VODS/TV VOD" and "/home/user/media/movies/:/VODS/Movie VOD".
+"/home/user/media/tvshows/:/usr/src/app/VODS/TV VOD" and "/home/user/media/movies/:/usr/src/app/VODS/Movie VOD".
 
 Use the above at your own risk however, as the script that populates the Movie VOD and TV VOD folders
 in the container at /VODS does delete movies and shows that do not appear in the m3ulist.
@@ -36,7 +36,7 @@ What the above does accomplish is having a single media library,
 one for each TV and Movies in your jellyfin/emby/plex.
 
 My suggestion is to map the folders to a folder accessible to jellyfin but not directly in an existing library.
-So for example use /home/user/media/:/VODS
+So for example use /home/user/media/:/usr/src/app/VODS
 That will create the TV VOD and Movie VOD folders in the media folder,
 and then add those as either new libraries to your media server, or, using jellyfin as an example,
 edit your current TV Show and Movie library to include those VOD folders.
