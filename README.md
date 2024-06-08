@@ -10,6 +10,8 @@ services:
   m3uparser:
     image: xaque87/m3uparser
     environment:
+      - PUID=1000
+      - PGID=1000
       - VOD_URL=<YOUR_IPT_VOD_M3U_URL>
       - HOURS=12 #update interval, setting this optional, defaults to 12hrs if you omit this line, suggest not going below 6hrs.
     volumes:
