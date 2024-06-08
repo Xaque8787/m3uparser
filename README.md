@@ -8,7 +8,7 @@ version: '3'
 
 services:
   m3uparser:
-    image: xaque87/m3uparser
+    image: xaque87/m3uparser:latest
     environment:
       - PUID=1000
       - PGID=1000
