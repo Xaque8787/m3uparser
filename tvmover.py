@@ -1,10 +1,6 @@
 import os
 import shutil
 
-# Read the destination path from the configuration file
-with open('/usr/src/app/destination.cfg', 'r') as f:
-    destination_path = f.read().strip()
-
 # Specify paths for movies
 local_dir = '/usr/src/app/VODS/TV VOD'
 master_dir = '/usr/src/app/TV VOD'
