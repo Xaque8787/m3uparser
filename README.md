@@ -31,7 +31,7 @@ services:
 
 ### Basic Information
 
-Most of the information used to create the file and folder structure is derived from the group-title line in the m3u file.
+Most of the information used to create the file and folder structure is derived from the group-title value in the m3u files #EXTINF line.
 There are 5 types of streams that are defined.
 
 + series - Television shows that have season/episode value
