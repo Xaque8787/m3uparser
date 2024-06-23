@@ -42,6 +42,8 @@ There are 5 types of streams that are defined.
 
 + live-tv - Any stream that is a live tv stream.
 
++ unsorted - Any stream found that does not fit the above
+
 
 ### Examples and Explanations
 **SCRUB_HEADER**
