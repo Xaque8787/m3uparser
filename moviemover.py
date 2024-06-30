@@ -2,8 +2,8 @@ import os
 import shutil
 
 # Specify paths for movies
-local_dir = '/usr/src/app/VODS/Movie VOD'
-master_dir = '/usr/src/app/Movie VOD'
+local_dir = '/usr/src/app/VODS/Movie_VOD'
+master_dir = '/usr/src/app/Movie_VOD'
 
 def sync_directories(src, dest):
     for item in os.listdir(src):

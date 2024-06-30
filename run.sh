@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Path to the log file
-log_file="/usr/src/app/VODS/log_file.log"
+log_file="/usr/src/app/logs/log_file.log"
 # Truncate the log file to ensure it's empty before appending new output
 > "$log_file"
 # Redirecting stdout and stderr of the script to the log file
@@ -48,27 +48,28 @@ echo "All files have been combined into $output_file"
 python3 "/usr/src/app/parser.py"
 sleep 3
 python3 "/usr/src/app/moviemover.py"
-sleep 5
+sleep 3
 python3 "/usr/src/app/tvmover.py"
-sleep 5
+sleep 3
 
-if [ "$UNSORTED" = "true" ]; then
+if [ "$(echo "$UNSORTED" | tr '[:upper:]' '[:lower:]')" = "true" ]; then
     python3 "/usr/src/app/unsortedmover.py"
 else
-    rm -rf "/usr/src/app/Unsorted VOD"
+    rm -rf "/usr/src/app/Unsorted_VOD"
 fi
 
-if [ "$LIVE_TV" = "true" ]; then
-    cp -f ./livetv.m3u /usr/src/app/VODS/
+if [ "$(echo "$LIVE_TV" | tr '[:upper:]' '[:lower:]')" = "true" ]; then
+    mkdir -p /usr/src/app/VODS/Live_TV
+    mv -f "./livetv.m3u" "/usr/src/app/VODS/Live_TV/"
 fi
+
 
 # Clean up
 cd "/usr/src/app/"
-rm -rf "/usr/src/app/Movie VOD"
-rm -rf "/usr/src/app/TV VOD"
-rm -rf "/usr/src/app/Unsorted VOD"
+rm -rf "/usr/src/app/Movie_VOD"
+rm -rf "/usr/src/app/TV_VOD"
+rm -rf "/usr/src/app/Unsorted_VOD"
 rm -f "/usr/src/app/m3u_file.m3u"
-rm -f "/usr/src/app/livetv.m3u"
 rm -rf /usr/src/app/m3u/*
 sleep 5
 
