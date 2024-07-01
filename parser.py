@@ -5,9 +5,9 @@ import os
 script_dir = os.path.dirname(os.path.abspath(__file__))
 m3u_file_path = os.path.join(script_dir, "m3u_file.m3u")
 # Initialize directories
-tv_dir = os.path.join(script_dir, "TV VOD")
-movies_dir = os.path.join(script_dir, "Movie VOD")
-unsorted_dir = os.path.join(script_dir, "Unsorted VOD")
+tv_dir = os.path.join(script_dir, "TV_VOD")
+movies_dir = os.path.join(script_dir, "Movie_VOD")
+unsorted_dir = os.path.join(script_dir, "Unsorted_VOD")
 livetv_file = os.path.join(script_dir, "livetv.m3u")
 # Create directories if they don't exist
 for directory in [tv_dir, movies_dir, unsorted_dir]:
