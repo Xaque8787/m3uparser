@@ -1,11 +1,11 @@
 # m3u|>arser
 Parse your m3u urls and make a .strm library for media server
 
-Docker Compose Example
-
 Check out the branch ezpztv for automated Jellyfin server integration. https://github.com/Xaque8787/m3uparser/tree/ezpztv
 
-```compose example
+Docker Compose Example
+
+```
 services:
   m3uparser:
     image: xaque87/m3uparser:latest
