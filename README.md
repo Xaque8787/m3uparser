@@ -33,7 +33,7 @@ You can also un comment out the #- JELLYFIN_PublishedServerUrl=0.0.0.0 line in t
 services:
   ezpztv:
     container_name: ezpztv
-    image: ezpztv:latest
+    image: xaque87/ezpztv:latest
     environment:
       - PUID=1000
       - PGID=1000
