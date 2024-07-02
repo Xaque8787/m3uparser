@@ -78,13 +78,14 @@ volumes:
   config_volume:
   server_cfg:
 ```
-ENV VARIABLE 	VALUE 	DESCRIPTION 	EXAMPLE
-SCRUB_HEADER 	any text, in quotes, and seperated with a comma , 	Removes value and preceeding text from begining of group-title line 	"HD :"
-REMOVE_TERMS 	any text, in quotes, and seperated with a comma , 	Removes value(s) set from file and directory names, requires at least 1 CLEANER value set 	"x264, 720p"
-CLEANERS 	series,movie,tv,unsorted 	Type of stream to apply REMOVE_TERMS value to 	tv, movies
-LIVE_TV 	true/false 	Parse live tv streams in m3u urls and creates a single livetv.m3u 	true/false
-UNSORTED 	true/false 	Creates a VOD folder for undefined streams, either misspelled or poorly labled streams 	true/false
-Basic Information
+| ENV VARIABLE  | VALUE  | DESCRIPTION | EXAMPLE |
+| :------------ |:-------:|:-----:|:-----|
+|SCRUB_HEADER|any text, in quotes, and seperated with a comma ,|Removes value and preceeding text from begining of group-title line|"HD :"|
+|REMOVE_TERMS|any text, in quotes, and seperated with a comma ,|Removes value(s) set from file and directory names, requires at least 1 CLEANER value set|"x264, 720p"|
+|CLEANERS|series,movie,tv,unsorted|Type of stream to apply REMOVE_TERMS value to| tv, movies|
+|LIVE_TV|true/false|Parse live tv streams in m3u urls and creates a single livetv.m3u|true/false|
+|UNSORTED|true/false|Creates a VOD folder for undefined streams, either misspelled or poorly labled streams|true/false|
+
 
 Most of the information used to create the file and folder structure is derived from the group-title value in the m3u files #EXTINF line. There are 5 types of streams that are defined.
 
