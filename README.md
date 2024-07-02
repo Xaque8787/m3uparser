@@ -1,8 +1,14 @@
 # m3u|>arser / EZPZTV
-Parse your m3u urls and make a .strm library for media server. Notice that the docker image is now **xaque87/ezpztv:latest**
+Parse your m3u urls and make a .strm library for media server. 
+
+Notice that the docker image is now **xaque87/ezpztv:latest**
+
 By adding this jellyfin service section to the compose file m3u|>arser will automatically setup a jellyfin server via API calls.
+
 Make sure to not change volume mounts or the ezpz network ip addresses, they are crucial to the setup.
+
 Access to your server will be on localhost, local ip address, or ezpznet address. To connect to your server from another device use local_ip_address:8096
+
 You can also un comment out the #- JELLYFIN_PublishedServerUrl=0.0.0.0 line in the Jellyfin service to set a different ip address to connect to from the server.
 ```
 services:
