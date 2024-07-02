@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # m3u|>arser / EZPZTV
 Parse your m3u urls and make a .strm library for media server. 
 
@@ -16,7 +15,7 @@ services:
   ezpztv:
     container_name: ezpztv
     image: ezpztv:test
-=======
+
 m3u|>arser & EZPZTV
 
 Parse your m3u urls and make a .strm library for media server.
@@ -35,7 +34,6 @@ services:
   ezpztv:
     container_name: ezpztv
     image: ezpztv:latest
->>>>>>> ezpztv_test
     environment:
       - PUID=1000
       - PGID=1000
@@ -58,7 +56,7 @@ services:
       ezpznet:
         ipv4_address: 10.21.12.7
       default:
-<<<<<<< HEAD
+
 
   ezpztv_jellyfin:
     image: lscr.io/linuxserver/jellyfin:latest
@@ -96,9 +94,7 @@ volumes:
   movie_vod_volume:
   tv_vod_volume:
   config_volume:
-```
-=======
->>>>>>> ezpztv_test
+
 
   ezpztv_jellyfin:
     image: lscr.io/linuxserver/jellyfin:latest
