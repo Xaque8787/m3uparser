@@ -36,7 +36,7 @@ There are 5 types of streams that are defined.
 
 + series - Television shows that have season/episode value
 
-+ tv - Television shows that use 'aired on date'. Typically late night talk shows and contain a guest star in the title. i.e. Jimmy Kimmel Chris Pine 2024 05 09 or The Daily Show Matt Damon 2024 05 08
++ tv - Television shows that use 'aired on date'. Typically late night talk shows that contain a guest star in the title. i.e. Jimmy Kimmel Chris Pine 2024 05 09 or The Daily Show Matt Damon 2024 05 08
 
 + movies - Movies with year release
 
@@ -48,7 +48,7 @@ There are 5 types of streams that are defined.
 ### Examples and Explanations
 **SCRUB_HEADER**
 
-First thing to do would be to look at a line from one or all of the m3u files you plan to parse. The SCRUB_HEADER value should be a string of characters that is in each 'group-title=' value of the #EXTINF line. Take the below as an example, you can see that in each of the group-title= value that there is the string **"Movie VOD",HD :** that comes before each movie title and year. To "scrub" this line, you could add "HD :" to the SCRUB_HEADER value in the compose, and it will remove the value + everything that precedes it. This is required to correctly parse the titles, year, and other information for TV and Movies. The SCRUB_HEADER function is applied to all lines in thr m3u file, while REMOVE_TERMSis applied to titles set in the CLEANERS value, and live tv streams are processed seperatly.
+First thing to do would be to look at a line from one or all of the m3u files you plan to parse. The SCRUB_HEADER value should be a string of characters that is in each 'group-title=' value of the #EXTINF line. Take the below as an example, you can see that in each of the group-title= value that there is the string **"Movie VOD",HD :** that comes before each movie title and year. To "scrub" this line, you could add "HD :" to the SCRUB_HEADER value in the compose, and it will remove the value + everything that precedes it. This is required to correctly parse the titles, year, and other information for TV and Movies. The SCRUB_HEADER function is applied to all lines in thr m3u file, while REMOVE_TERMS is applied to all titles that are set in the CLEANERS value, while live tv streams are processed seperatly without SRUB_HEADER or REMOVE_TERMS applied.
 ```
 #EXTINF:0 group-title="Movie VOD",HD : The Crow 1994
 #EXTGRP:Movie VOD
@@ -82,4 +82,3 @@ I suggest creating a folder named VODS that your media server has access to. Or 
 That will create the TV VOD and Movie VOD folders in the directory that Jellyfin can access, and then add those as either new libraries,or edit your current TV Show and Movie library to include those VOD folders.
 
 I myself separate my VOD .strm library from my digital library. As in, in my jellyfin server I have each a Movies, TV Shows, Movie VOD, TV VOD library. This allows some flexibility if for some reason a VOD library needs to be rebuilt or something goes wrong, it doesnt affect my non .strm library. However, either way should work just fine.
-
