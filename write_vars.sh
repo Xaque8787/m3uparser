@@ -26,9 +26,17 @@ M3U_URL_cleaned="${M3U_URL#\"}"
 M3U_URL_cleaned="${M3U_URL_cleaned%\"}"
 echo "$M3U_URL_cleaned" | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' >> "$url_file"
 
+<<<<<<< HEAD
 setup_file="./vars/setup.txt"
 if [ ! -f "$setup_file" ]; then
     echo "true" > "$setup_file"
+=======
+setup_file="./server_cfg/server.cfg"
+if [ ! -f "$setup_file" ]; then
+    echo "true" > "$setup_file"
+else
+    echo "false" > "$setup_file"
+>>>>>>> ezpztv_test
 fi
 current_value=$(<"$setup_file")
 if [[ -z "$current_value" ]]; then
