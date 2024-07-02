@@ -14,25 +14,6 @@ You can also un comment out the #- JELLYFIN_PublishedServerUrl=0.0.0.0 line in t
 services:
   ezpztv:
     container_name: ezpztv
-    image: ezpztv:test
-
-m3u|>arser & EZPZTV
-
-Parse your m3u urls and make a .strm library for media server.
-
-Notice that the docker image is now xaque87/ezpztv:latest
-
-By adding this jellyfin service section to the compose file m3u|>arser will automatically setup a jellyfin server via API calls.
-
-Make sure to not change volume mounts or the ezpz network ip addresses, they are crucial to the setup.
-
-Access to your server will be on localhost, local ip address, or ezpznet address. To connect to your server from another device use local_ip_address:8096
-
-You can also un comment out the #- JELLYFIN_PublishedServerUrl=0.0.0.0 line in the Jellyfin service to set a different ip address to connect to from the server.
-
-services:
-  ezpztv:
-    container_name: ezpztv
     image: xaque87/ezpztv:latest
     environment:
       - PUID=1000
@@ -52,6 +33,7 @@ services:
       - movie_vod_volume:/usr/src/app/VODS/Movie_VOD/
       - tv_vod_volume:/usr/src/app/VODS/TV_VOD/
       - live_tv:/usr/src/app/VODS/Live_TV/
+      - server_cfg:/usr/src/app/server_cfg
     networks:
       ezpznet:
         ipv4_address: 10.21.12.7
@@ -94,45 +76,8 @@ volumes:
   movie_vod_volume:
   tv_vod_volume:
   config_volume:
-
-
-  ezpztv_jellyfin:
-    image: lscr.io/linuxserver/jellyfin:latest
-    container_name: ezpztv_jellyfin
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Etc/UTC
-      #- JELLYFIN_PublishedServerUrl=0.0.0.0 #optional
-    volumes:
-      - config_volume:/config
-      - tv_vod_volume:/data/tvshows
-      - movie_vod_volume:/data/movies
-      - live_tv:/data
-    ports:
-      - 8096:8096
-      - 8920:8920 # optional
-      - 7359:7359/udp # optional
-      - 1900:1900/udp # optional
-    networks:
-      ezpznet:
-        ipv4_address: 10.21.12.8
-      default:
-    restart: unless-stopped
-
-networks:
-  ezpznet:
-    ipam:
-      driver: default
-      config:
-        - subnet: "10.21.12.0/28"
-
-volumes:
-  live_tv:
-  movie_vod_volume:
-  tv_vod_volume:
-  config_volume:
-
+  server_cfg:
+```
 ENV VARIABLE 	VALUE 	DESCRIPTION 	EXAMPLE
 SCRUB_HEADER 	any text, in quotes, and seperated with a comma , 	Removes value and preceeding text from begining of group-title line 	"HD :"
 REMOVE_TERMS 	any text, in quotes, and seperated with a comma , 	Removes value(s) set from file and directory names, requires at least 1 CLEANER value set 	"x264, 720p"
