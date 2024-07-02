@@ -61,9 +61,16 @@ fi
 if [ "$(echo "$LIVE_TV" | tr '[:upper:]' '[:lower:]')" = "true" ]; then
     mkdir -p /usr/src/app/VODS/Live_TV
     mv -f "./livetv.m3u" "/usr/src/app/VODS/Live_TV/"
+else
+    rm -f "./livetv.m3u"
 fi
 
-
+sleep 3
+setup_file="./vars/setup.txt"
+if [[ $(<"$setup_file") == "true" ]]; then
+    python3 "/usr/src/app/EZPZTV/ezpztv.py"
+    echo "false" > "$setup_file"
+fi
 # Clean up
 cd "/usr/src/app/"
 rm -rf "/usr/src/app/Movie_VOD"

@@ -141,7 +141,7 @@ def process_value(value, remove_strings=None, remove_header=None, remove_terms=N
                 #print("Term {} not found in value".format(terms_term))
                 pass  
 
-    print("Final value:", value)
+    #print("Final value:", value)
     return value.strip()
 
 def process_strings(value, remove_strings=None, remove_header=None, remove_terms=None):
@@ -410,9 +410,9 @@ def main():
     entries, errors = parse_m3u_file(m3u_file_path)
 
     # Print the final parsed dictionaries
-    print("\nFinal parsed dictionaries:")
-    for d in entries:
-        print(d)
+    #print("\nFinal parsed dictionaries:")
+    #for d in entries:
+        #print(d)
 
     # Process each entry dictionary and track created .strm files
     tv_strm_files = []
