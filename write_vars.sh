@@ -57,5 +57,4 @@ cleaners_file="./vars/cleaners.txt"
 for cleaner in "${!present_cleaners[@]}"; do
     echo "$cleaner=${present_cleaners["$cleaner"]}" >> "$cleaners_file"
 done
-done
 
