@@ -26,12 +26,16 @@ M3U_URL_cleaned="${M3U_URL#\"}"
 M3U_URL_cleaned="${M3U_URL_cleaned%\"}"
 echo "$M3U_URL_cleaned" | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' >> "$url_file"
 
-# Write apikey to jellyapi.txt
-#api_file="./vars/jellyapi.txt"
-#> "$api_file"
-#JELLYFIN_API_cleaned="${JELLYFIN_API#\"}"
-#JELLYFIN_API_cleaned="${JELLYFIN_API_cleaned%\"}"
-#echo "$JELLYFIN_API_cleaned" > "$api_file"
+setup_file="./server_cfg/server.cfg"
+if [ ! -f "$setup_file" ]; then
+    echo "true" > "$setup_file"
+else
+    echo "false" > "$setup_file"
+fi
+current_value=$(<"$setup_file")
+if [[ -z "$current_value" ]]; then
+    echo "true" > "$setup_file"
+fi
 
 # Clean the variable of leading and trailing double quotes
 CLEANERS_cleaned="${CLEANERS#\"}"
@@ -56,6 +60,5 @@ cleaners_file="./vars/cleaners.txt"
 > "$cleaners_file"
 for cleaner in "${!present_cleaners[@]}"; do
     echo "$cleaner=${present_cleaners["$cleaner"]}" >> "$cleaners_file"
-done
 done
 
