@@ -66,11 +66,8 @@ else
 fi
 
 sleep 3
-<<<<<<< HEAD
-setup_file="./vars/setup.txt"
-=======
+
 setup_file="./server_cfg/server.cfg"
->>>>>>> ezpztv_test
 if [[ $(<"$setup_file") == "true" ]]; then
     python3 "/usr/src/app/EZPZTV/ezpztv.py"
     echo "false" > "$setup_file"
