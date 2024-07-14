@@ -9,91 +9,97 @@ def clean_group_title(entry, REMOVE_TERMS, REMOVE_DEFAULTS):
     # print(f"Original group-title value: {value}")
     combined_cleaners = cleaner_value(process_env_variable)
     cleaners = enable_cleaners(combined_cleaners)
-    # Check if it's a TV show and extract season_episode and air_date
-    season_episode_match = re.search(
-        r'\b[sS]\d{1,3}[eE]\d{1,3}\b|\b[0-9]{1,3}[xX][0-9]{1,3}\b|\b[sS]\d{1,3}[eE]\d{1,3}\b', value)
-    if season_episode_match:
-        entry['season_episode'] = season_episode_match.group(0).strip()
-        entry['series'] = True
-        entry['tv_show'] = True
+    try:
+        # Check if it's a TV show and extract season_episode and air_date
+        season_episode_match = re.search(
+            r'\b[sS]\d{1,3}[eE]\d{1,3}\b|\b[0-9]{1,3}[xX][0-9]{1,3}\b|\b[sS]\d{1,3}[eE]\d{1,3}\b', value)
+        if season_episode_match:
+            entry['season_episode'] = season_episode_match.group(0).strip()
+            entry['series'] = True
+            entry['tv_show'] = True
+            show_title_match = re.search(
+                r'.*?(?=\b[sS]\d{1,3}[eE]\d{1,3}\b|\b[0-9]{1,3}[xX][0-9]{1,3}\b|\b[sS]\d{1,3}[eE]\d{1,3}\b)', value)
+            if show_title_match:
+                show_title = show_title_match.group(0).strip()
+                if  cleaners['clean_series']:
+                    entry['show_title'] = process_value(show_title_match.group(0),
+                                                        remove_terms=REMOVE_TERMS + REMOVE_DEFAULTS).strip()
+                    value = re.sub(re.escape(entry['show_title']), '', value).strip()
+                else:
+                    entry['show_title'] = show_title
+                    value = re.sub(re.escape(entry['show_title']), '', value).strip()
+            # Extract season and episode numbers
+            season_match = re.search(r'(?<=[sS])\d{1,3}|\d{1,3}(?=[xX])', entry['season_episode'])
+            episode_match = re.search(r'(?<=[eE])\d{1,3}|(?<=[xX])\d{1,3}|(?<=[eE])\d{1,4}', entry['season_episode'])
+            if season_match:
+                entry['season'] = season_match.group(0).strip()
+            if episode_match:
+                entry['episode'] = episode_match.group(0).strip()
+            value = re.sub(re.escape(entry['season_episode']), '', value).strip()
+        # Extract show title before air_date match
         show_title_match = re.search(
-            r'.*?(?=\b[sS]\d{1,3}[eE]\d{1,3}\b|\b[0-9]{1,3}[xX][0-9]{1,3}\b|\b[sS]\d{1,3}[eE]\d{1,3}\b)', value)
+            r'.*?(?=\b(?:19\d{2} \d{2} \d{2}|20\d{2} \d{2} \d{2}|\d{2} \d{2} 19\d{2}|\d{2} \d{2} 20\d{2}))\b', value)
         if show_title_match:
-            show_title = show_title_match.group(0).strip()
-            if 'clean_series' in cleaners and cleaners['clean_series']:
-                entry['show_title'] = process_value(show_title_match.group(0), remove_terms=REMOVE_TERMS + REMOVE_DEFAULTS).strip()
-                value = re.sub(re.escape(entry['show_title']), '', value).strip()
+            entry['show_title'] = show_title_match.group(0).strip()
+            value = re.sub(re.escape(entry['show_title']), '', value).strip()
+        air_date_match = re.search(
+            r'\b(?:19\d{2} \d{2} \d{2}|20\d{2} \d{2} \d{2}|\d{2} \d{2} 19\d{2}|\d{2} \d{2} 20\d{2})\b', value)
+        if air_date_match:
+            entry['air_date'] = air_date_match.group(0).strip()
+            value = re.sub(re.escape(entry['air_date']), '', value).strip()
+            entry['television'] = True
+            entry['tv_show'] = True
+            if cleaners['clean_tv']:
+                value = process_value(value, remove_terms=REMOVE_TERMS + REMOVE_DEFAULTS).strip()
+                entry['guest_star'] = value.strip()
+                value = re.sub(re.escape(entry['guest_star']), '', value).strip()
             else:
-                entry['show_title'] = show_title
-                value = re.sub(re.escape(entry['show_title']), '', value).strip()
-        # Extract season and episode numbers
-        season_match = re.search(r'(?<=[sS])\d{1,3}|\d{1,3}(?=[xX])', entry['season_episode'])
-        episode_match = re.search(r'(?<=[eE])\d{1,3}|(?<=[xX])\d{1,3}|(?<=[eE])\d{1,4}', entry['season_episode'])
-        if season_match:
-            entry['season'] = season_match.group(0).strip()
-        if episode_match:
-            entry['episode'] = episode_match.group(0).strip()
-        value = re.sub(re.escape(entry['season_episode']), '', value).strip()
-    # Extract show title before air_date match
-    show_title_match = re.search(
-        r'.*?(?=\b(?:19\d{2} \d{2} \d{2}|20\d{2} \d{2} \d{2}|\d{2} \d{2} 19\d{2}|\d{2} \d{2} 20\d{2}))\b', value)
-    if show_title_match:
-        entry['show_title'] = show_title_match.group(0).strip()
-        value = re.sub(re.escape(entry['show_title']), '', value).strip()
-    air_date_match = re.search(
-        r'\b(?:19\d{2} \d{2} \d{2}|20\d{2} \d{2} \d{2}|\d{2} \d{2} 19\d{2}|\d{2} \d{2} 20\d{2})\b', value)
-    if air_date_match:
-        entry['air_date'] = air_date_match.group(0).strip()
-        value = re.sub(re.escape(entry['air_date']), '', value).strip()
-        entry['television'] = True
-        entry['tv_show'] = True
-        if 'clean_tv' in cleaners and cleaners['clean_tv']:
-            value = process_value(value, remove_terms=REMOVE_TERMS + REMOVE_DEFAULTS).strip()
-            entry['guest_star'] = value.strip()
-            value = re.sub(re.escape(entry['guest_star']), '', value).strip()
-        else:
-            entry['guest_star'] = value.strip()
-            value = re.sub(re.escape(entry['guest_star']), '', value).strip()
-    # Check if it's a Movie and extract movie_date
-    if 'tv_show' not in entry:
-        movie_title_match = re.search(
-            r'(.*?)(?=\S*\b(?:19[0-9]{2}|20[0-9]{2})\b\S*(?!.*\b(?:19[0-9]{2}|20[0-9]{2})\b))', value)
-        if movie_title_match:
-            movie_title = movie_title_match.group(1).strip()
-            if 'clean_movies' in cleaners and cleaners['clean_movies']:
-                entry['movie_title'] = process_value(movie_title_match.group(1), remove_terms=REMOVE_TERMS + REMOVE_DEFAULTS).strip()
-                entry['movie'] = True
-                value = re.sub(re.escape(entry['movie_title']), '', value).strip()
-            else:
-                entry['movie_title'] = movie_title
-                entry['movie'] = True
-                value = re.sub(re.escape(entry['movie_title']), '', value).strip()
+                entry['guest_star'] = value.strip()
+                value = re.sub(re.escape(entry['guest_star']), '', value).strip()
+        # Check if it's a Movie and extract movie_date
+        if 'tv_show' not in entry:
+            movie_title_match = re.search(
+                r'(.*?)(?=\S*\b(?:19[0-9]{2}|20[0-9]{2})\b\S*(?!.*\b(?:19[0-9]{2}|20[0-9]{2})\b))', value)
+            if movie_title_match:
+                movie_title = movie_title_match.group(1).strip()
+                if cleaners['clean_movies']:
+                    entry['movie_title'] = process_value(movie_title_match.group(1), remove_terms=REMOVE_TERMS + REMOVE_DEFAULTS).strip()
+                    entry['movie'] = True
+                    value = re.sub(re.escape(entry['movie_title']), '', value).strip()
+                else:
+                    entry['movie_title'] = movie_title
+                    entry['movie'] = True
+                    value = re.sub(re.escape(entry['movie_title']), '', value).strip()
 
-        # Movie Date Extraction
-        movie_date_match = re.search(
-            r'\b(19[0-9][0-9]|\(19[3-9][0-9]\)|20[0-9][0-9]|\(20[0-9][0-9]\))\b(?!.*\b(19[0-9][0-9]|\(19[3-9][0-9]\)|20[0-9][0-9]|\(20[0-9][0-9]\))\b)',
-            value)
-        if movie_date_match:
-            entry['movie_date'] = movie_date_match.group(0).strip()
-            value = re.sub(re.escape(entry['movie_date']), '', value).strip()
+            # Movie Date Extraction
+            movie_date_match = re.search(
+                r'\b(19[0-9][0-9]|\(19[3-9][0-9]\)|20[0-9][0-9]|\(20[0-9][0-9]\))\b(?!.*\b(19[0-9][0-9]|\(19[3-9][0-9]\)|20[0-9][0-9]|\(20[0-9][0-9]\))\b)',
+                value)
+            if movie_date_match:
+                entry['movie_date'] = movie_date_match.group(0).strip()
+                value = re.sub(re.escape(entry['movie_date']), '', value).strip()
 
-    # Determine if it's Live TV based on duration
-    if 'movie' not in entry and 'tv_show' not in entry and 'duration' in entry and entry['duration'] == '-1':
-        entry['livetv'] = True
+        # Determine if it's Live TV based on duration
+        if 'movie' not in entry and 'tv_show' not in entry and 'duration' in entry and entry['duration'] == '-1':
+            entry['livetv'] = True
 
-    # Set entry of 'unsorted'
-    if 'movie' not in entry and 'tv_show' not in entry and 'livetv' not in entry:
-        entry['unsorted'] = True
+        # Set entry of 'unsorted'
+        if 'movie' not in entry and 'tv_show' not in entry and 'livetv' not in entry:
+            entry['unsorted'] = True
 
-    # Determine unsorted type if possible
-    # if 'unsorted' in entry:
-    # season_match = re.search(r'(?<=[sS])\d{1,3}|\d{1,3}(?=[xX])', entry['season_episode'])
-    # episode_matches = re.findall(r'(?<=[eE])\d{1,3}|(?<=[xX])\d{1,3}', entry['season_episode'])
-    # season/episode match for 2 episodes combined ie S24E11E12
-    # remove trailing numbers '0000'
+        # Determine unsorted type if possible
+        # if 'unsorted' in entry:
+        # season_match = re.search(r'(?<=[sS])\d{1,3}|\d{1,3}(?=[xX])', entry['season_episode'])
+        # episode_matches = re.findall(r'(?<=[eE])\d{1,3}|(?<=[xX])\d{1,3}', entry['season_episode'])
+        # season/episode match for 2 episodes combined ie S24E11E12
+        # remove trailing numbers '0000'
 
-    # Cleaned 'group-title' value
-    entry['group-title'] = value.strip()
+        # Cleaned 'group-title' value
+        entry['group-title'] = value.strip()
+        # final_value = entry.get('group-title', '')
+        # print(f"Final group-title value: {final_value}")
+    except Exception as e:
+        entry['error'] = str(e)
 
 
 def process_value(value, replace=None, remove_header=None, remove_terms=None):
@@ -104,8 +110,8 @@ def process_value(value, replace=None, remove_header=None, remove_terms=None):
         for key, value_to_replace in replace.items():
             pattern = re.compile(re.escape(key))
             match = pattern.search(value)
+            # print("\nProcessing replace term from replace values:", key)
             if match:
-                # print("\nProcessing replace term from replace values:", key)
                 value = pattern.sub(value_to_replace, value)
                 # print("Value after {} replace: {}".format(key, value_to_replace), value)
             else:

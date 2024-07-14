@@ -20,12 +20,21 @@ useradd -u "$PUID" -g "$PGID" --no-log-init m3uuser
 # Set ownership and permissions
 echo "Setting ownership and permissions..."
 chown -R "$PUID:$PGID" /usr/src/app
+<<<<<<< HEAD:parser/entrypoint.sh
 chmod +x /usr/src/app/parser.py
 
 # Switch to the m3uuser and run hours.sh
 echo "Switching to user 'm3uuser' and running hours.sh..."
 su -s /bin/bash -c "exec python3 /usr/src/app/parser.py" m3uuser
 
+=======
+chmod +x /usr/src/app/parser/parser_script.py
+
+# Switch to the m3uuser and run parser_script.py
+echo "Switching to user 'm3uuser' and running parser_script..."
+su -s /bin/bash -c "exec python3 /usr/src/app/parser/parser_script.py" m3uuser
+
+>>>>>>> local_dev:entrypoint.sh
 
 # Exit the entrypoint script
 echo "Entrypoint script execution completed."

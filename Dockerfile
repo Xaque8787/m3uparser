@@ -1,7 +1,6 @@
 FROM python:3
 
 WORKDIR /usr/src/app
-RUN mkdir -p VODS
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
@@ -15,11 +14,11 @@ ENV REPLACE_TERMS=
 ENV CLEANERS=
 ENV SCRUB_DEFAULTS="HD :, SD :"
 ENV REMOVE_DEFAULTS="720p, WEB, h264, H264, HDTV, x264"
-ENV CLEANERS_DEFAULTS=tv,movies
+ENV CLEANERS_DEFAULTS=tv
 ENV LIVE_TV=false
 ENV UNSORTED=false
 
-RUN chmod +x entrypoint.sh && chmod +x parser.py
+RUN chmod +x entrypoint.sh && chmod +x /usr/src/app/parser/parser_script.py
 
 
 

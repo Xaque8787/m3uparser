@@ -79,6 +79,7 @@ def initialize_vars(process_env_variable, str_to_bool, process_env_special, *arg
         # Return all variables
         return variables
 
+
 def vars_position(process_env_variable, str_to_bool, process_env_special, *args):
     script_dir = os.path.dirname(os.path.dirname(__file__))
     cfg_file = os.path.join(script_dir, f'server_cfg/server.cfg')
@@ -128,6 +129,8 @@ def vars_position(process_env_variable, str_to_bool, process_env_special, *args)
     else:
         # Return all variables
         return variables
+
+
 def create_vars():
     script_dir = os.path.dirname(os.path.dirname(__file__))
     variables = {
@@ -135,6 +138,7 @@ def create_vars():
         'server_cfg': os.path.join(script_dir, "server_cfg"),
         'cfg_file': os.path.join(script_dir, f'server_cfg/server.cfg'),
         'logs': os.path.join(script_dir, "logs"),
+        'VODS': os.path.join(script_dir, "VODS"),
         'local_mov_dir': f'{script_dir}/VODS/Movie_VOD',
         'master_mov_dir': f'{script_dir}/Movie_VOD',
         'local_tv_dir': f'{script_dir}/VODS/TV_VOD',
@@ -153,8 +157,8 @@ def create_vars():
 
     return variables
 
+
 def cleaner_value(process_env_variable):
-    load_dotenv()  # Ensure you load environment variables if needed
 
     cleaner_value = {
         'CLEANERS': process_env_variable(os.getenv('CLEANERS', "")),
@@ -164,22 +168,6 @@ def cleaner_value(process_env_variable):
     combined_cleaners = cleaner_value['CLEANERS'] + cleaner_value['CLEANERS_DEFAULTS']
     return combined_cleaners
 
-
-def jelly_vars(str_to_bool):
-
-    load_dotenv()
-    variables = {
-
-        'main_user': os.getenv('USER_NAME', ""),
-        'main_pass': os.getenv('PASSWORD', ""),
-        'jellyfin_url': os.getenv('JELLYFIN_URL', ""),
-        'epg_path': os.getenv('EPG_URL', ""),
-        'server_name': os.getenv('SERVER_NAME', ""),
-        'live_tv': str_to_bool(os.getenv('LIVE_TV', ""))
-
-    }
-
-    return variables['jellyfin_url'], variables['server_name'], variables['main_user']
 
 def update_env_file(key, value):
     script_dir = os.path.dirname(os.path.dirname(__file__))
@@ -209,11 +197,6 @@ def update_env_file(key, value):
 # update_env_file('SERVER_SETUP', 'True')
 
 
-# Print configuration for debugging
-# jellyfin_url, server_name, main_user = jelly_vars(str_to_bool)
-# print(jellyfin_url)
-# print(server_name)
-# print(main_user)
 def print_config():
     variables = initialize_vars(process_env_variable, str_to_bool, process_env_special)
     print("Loaded Configuration:")

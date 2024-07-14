@@ -3,7 +3,7 @@ def dirmake(create_vars):
     try:
         create = create_vars()
         # Create directories if they don't exist
-        for directory in [create['m3u_dir'], create['live_tv_dir'], create['logs'], create['server_cfg'],
+        for directory in [create['VODS'], create['m3u_dir'], create['live_tv_dir'], create['logs'], create['server_cfg'],
                           create['unsorted_dir'], create['tv_dir'], create['movies_dir']]:
             if not os.path.exists(directory):
                 os.makedirs(directory)

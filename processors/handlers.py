@@ -36,7 +36,7 @@ def handle_entry(entry, tv_dir, movies_dir, unsorted_dir, errors):
                 # print(f"Created directory: {series_dir}")
             strm_file = os.path.join(series_dir, f"{show_title} {season_episode}.strm")
             print(f"Writing to file: {strm_file}")
-            from parser.utils.readers import write_to_file
+            from utils import write_to_file
             write_to_file(strm_file, entry.get('stream_url', ''))
             return strm_file
 
@@ -55,7 +55,7 @@ def handle_entry(entry, tv_dir, movies_dir, unsorted_dir, errors):
                 # print(f"Created directory: {tv_show_dir}")
             strm_file = os.path.join(tv_show_dir, f"{tv_strm_file}.strm")
             print(f"Writing to file: {strm_file}")
-            from parser.utils.readers import write_to_file
+            from utils import write_to_file
             write_to_file(strm_file, entry.get('stream_url', ''))
             return strm_file
 
@@ -68,7 +68,7 @@ def handle_entry(entry, tv_dir, movies_dir, unsorted_dir, errors):
                 # print(f"Created directory: {movie_dir_path}")
             strm_file = os.path.join(movie_dir_path, f"{movie_title} ({movie_date}).strm")
             print(f"Writing to file: {strm_file}")
-            from parser.utils.readers import write_to_file
+            from utils import write_to_file
             write_to_file(strm_file, entry.get('stream_url', ''))
             return strm_file
 
@@ -80,10 +80,9 @@ def handle_entry(entry, tv_dir, movies_dir, unsorted_dir, errors):
                 # print(f"Created directory: {unsorted_dir_path}")
             strm_file = os.path.join(unsorted_dir_path, f"{group_title}.strm")
             print(f"Writing to file: {strm_file}")
-            from parser.utils.readers import write_to_file
+            from utils import write_to_file
             write_to_file(strm_file, entry.get('stream_url', ''))
             return strm_file
-
 
     except Exception as e:
         error_message = f"Error handling entry: {entry}\nError: {e}"
@@ -106,6 +105,10 @@ def proc_entries(entries, errors, tv_dir, movies_dir, unsorted_dir):
                 movie_strm_files.append(strm_file)
             elif entry.get('unsorted'):
                 unsorted_strm_files.append(strm_file)
+    # Print the final parsed dictionaries
+    # print("\nFinal parsed dictionaries:")
+    # for d in entries:
+        # print(d)
 
 
 def sync_directories(src, dest):
