@@ -34,8 +34,7 @@ services:
 |UNSORTED|true/false|Creates a VOD folder for undefined streams, either misspelled or poorly labeled streams|true/false|false|
 
 ### Basic Information
-**DEFAULT VALUES**
-All default values can be added to by entering more values into the appropriate env variable in the compose file.
+
 Most of the information used to create the file and folder structure is derived from the group-title value in the m3u files #EXTINF line.
 There are 5 types of streams that are defined.
 
@@ -51,6 +50,9 @@ There are 5 types of streams that are defined.
 
 
 ### Examples and Explanations
+**DEFAULT VALUES**
+All default values can be added to by entering more values into the appropriate env variable in the compose file. The default for REPLACE_TERMS is "1/2=\u00BD, /=-" which will take 1/2 and replace it with the unicode character &frac12; And replace any / with a -
+
 **SCRUB_HEADER**
 
 First thing to do would be to look at a line from one or all of the m3u files you plan to parse. The SCRUB_HEADER value should be a string of characters that is in each 'group-title=' value of the #EXTINF line. Take the below as an example, you can see that in each of the group-title= value that there is the string **"Movie VOD",HD :** that comes before each movie title and year. To "scrub" this line, you could add "HD :" to the SCRUB_HEADER value in the compose, and it will remove the value + everything that precedes it. This is required to correctly parse the titles, year, and other information for TV and Movies. The SCRUB_HEADER function is applied to all lines in thr m3u file, while REMOVE_TERMS is applied to all titles that are set in the CLEANERS value, while live tv streams are processed separately without SRUB_HEADER or REMOVE_TERMS applied.
