@@ -14,25 +14,29 @@ services:
       - PGID=1000 # Default if blank
       - M3U_URL="m3uURL1.com, m3uURL2.com, etc..."
       - HOURS=12 #update interval, setting this optional, default 12hrs
-      - SCRUB_HEADER= #required, probably. See below explanation and examples.
+      - SCRUB_HEADER=
       - REMOVE_TERMS=
+      - REPLACE_TERMS
       - CLEANERS=
       - LIVE_TV= # Default is false
       - UNSORTED= # Default is false
     volumes:
       - /path/to/your/media/library:/usr/src/app/VODS
+      - /path/to/your/media/library:/usr/src/app/logs/
 ```
 
-| ENV VARIABLE  | VALUE  | DESCRIPTION | EXAMPLE |
-| :------------ |:-------:|:-----:|:-----|
-|SCRUB_HEADER|any text, in quotes, and seperated with a comma ,|Removes value and preceeding text from begining of group-title line|"HD :"|
-|REMOVE_TERMS|any text, in quotes, and seperated with a comma ,|Removes value(s) set from file and directory names, requires at least 1 CLEANER value set|"x264, 720p"|
-|CLEANERS|series,movie,tv,unsorted|Type of stream to apply REMOVE_TERMS value to| tv, movies|
-|LIVE_TV|true/false|Parse live tv streams in m3u urls and creates a single livetv.m3u|true/false|
-|UNSORTED|true/false|Creates a VOD folder for undefined streams, either misspelled or poorly labled streams|true/false|
+| ENV VARIABLE  | VALUE  | DESCRIPTION | EXAMPLE | DEFAULT VALUES |
+| :------------ |:-------:|:-----:|:-----|:-----:|
+|SCRUB_HEADER|any text, in quotes, and seperated with a comma ,|Removes value and preceding text from begining of group-title line|"HD :"|"HD :, SD :"|
+|REMOVE_TERMS|any text, in quotes, and seperated with a comma ,|Removes value(s) set from file and directory names|"x264, 720p"| "720p, WEB, h264, H264, HDTV, x264"|
+|REPLACE_TERMS|"term-to-replace=replace-value"|Replaces one value with another. Separate terms with an = and term on left is replaced with term to the right|"replace-this=with-this"| "1/2=\u00BD, /=-"|
+|CLEANERS|series,movie,tv,unsorted|Type of stream to apply REMOVE_TERMS value to| tv, movies|tv|
+|LIVE_TV|true/false|Parse live tv streams in m3u urls and creates a single livetv.m3u|true/false|false|
+|UNSORTED|true/false|Creates a VOD folder for undefined streams, either misspelled or poorly labeled streams|true/false|false|
 
 ### Basic Information
-
+**DEFAULT VALUES**
+All default values can be added to by entering more values into the appropriate env variable in the compose file.
 Most of the information used to create the file and folder structure is derived from the group-title value in the m3u files #EXTINF line.
 There are 5 types of streams that are defined.
 
@@ -50,7 +54,7 @@ There are 5 types of streams that are defined.
 ### Examples and Explanations
 **SCRUB_HEADER**
 
-First thing to do would be to look at a line from one or all of the m3u files you plan to parse. The SCRUB_HEADER value should be a string of characters that is in each 'group-title=' value of the #EXTINF line. Take the below as an example, you can see that in each of the group-title= value that there is the string **"Movie VOD",HD :** that comes before each movie title and year. To "scrub" this line, you could add "HD :" to the SCRUB_HEADER value in the compose, and it will remove the value + everything that precedes it. This is required to correctly parse the titles, year, and other information for TV and Movies. The SCRUB_HEADER function is applied to all lines in thr m3u file, while REMOVE_TERMS is applied to all titles that are set in the CLEANERS value, while live tv streams are processed seperatly without SRUB_HEADER or REMOVE_TERMS applied.
+First thing to do would be to look at a line from one or all of the m3u files you plan to parse. The SCRUB_HEADER value should be a string of characters that is in each 'group-title=' value of the #EXTINF line. Take the below as an example, you can see that in each of the group-title= value that there is the string **"Movie VOD",HD :** that comes before each movie title and year. To "scrub" this line, you could add "HD :" to the SCRUB_HEADER value in the compose, and it will remove the value + everything that precedes it. This is required to correctly parse the titles, year, and other information for TV and Movies. The SCRUB_HEADER function is applied to all lines in thr m3u file, while REMOVE_TERMS is applied to all titles that are set in the CLEANERS value, while live tv streams are processed separately without SRUB_HEADER or REMOVE_TERMS applied.
 ```
 #EXTINF:0 group-title="Movie VOD",HD : The Crow 1994
 #EXTGRP:Movie VOD
@@ -65,7 +69,7 @@ Trailing whitespaces will be stripped, so in this example you do not need to add
 
 **REMOVE_TERMS & CLEANERS**
 
-Similar to the SCRUB_HEADER but removes the value of the term + any attatched characters. For titles that have "**x264-somegarbage**", your REMOVE_TERMS value should be x264. This will remove the entire 'x264-somegarbage' line. This is case sensitive, so it is best to include both variations for values. A typical REMOVE_TERMS line in a compose file would look like REMOVE_TERMS="x264, X264, HDTV, WEB, 720, x265, X265". The REMOVE_TERMS will only apply to titles of values in the CLEANERS. So, if you find that only series (TV that has seasons and episodes) and tv shows (shows with 'air-date') then your CLEANERS line in the compose file should be CLEANERS=series,tv 
+Similar to the SCRUB_HEADER but removes the value of the term + any attatched characters. For titles that have "**x264-somegarbage**", your REMOVE_TERMS value should be x264. This will remove the entire 'x264-somegarbage' line. This is case sensitive, so it is best to include both variations for values. A typical REMOVE_TERMS line in a compose file would look like REMOVE_TERMS="x264, X264, HDTV, WEB, 720, x265, X265" *this is now the default. The REMOVE_TERMS will only apply to titles of values in the CLEANERS. So, if you find that only series (TV that has seasons and episodes) and tv shows (shows with 'air-date') then your CLEANERS line in the compose file should be CLEANERS=series,tv. *tv category is now set to default for cleaners. Another example of using these env vars would be if your movie titles contain a language in them, i.e Tropic Thunder [SP] (2012). So the [SP] would be the term you put in ```REMOVE_TERMS="[SP]"``` and add movies to ```CLEANERS=movies```
 
 >series = shows with season/episodes, tv = shows with 'air-dates', movie = movie, unsorted = unsorted
 
