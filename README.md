@@ -1,28 +1,76 @@
 # m3u|>arser
 Parse your m3u urls and make a .strm library for media server
 
-Check out the branch ezpztv for automated Jellyfin server integration. https://github.com/Xaque8787/m3uparser/tree/ezpztv
-
 Docker Compose Example
 
 ```
 services:
   m3uparser:
+    container_name: ezpztv
     image: xaque87/m3uparser:latest
     environment:
-      - PUID=1000 # Default if blank
-      - PGID=1000 # Default if blank
-      - M3U_URL="m3uURL1.com, m3uURL2.com, etc..."
-      - HOURS=12 #update interval, setting this optional, default 12hrs
-      - SCRUB_HEADER=
-      - REMOVE_TERMS=
-      - REPLACE_TERMS
-      - CLEANERS=
-      - LIVE_TV= # Default is false
-      - UNSORTED= # Default is false
+      - PUID=1000 # Defaults 1000 if blank.
+      - PGID=1000 # Defaults 1000 if blank.
+      - M3U_URL= # "https://m3u_URL1.com, https://m3u_URL2.com, etc..."
+      - HOURS=12 # update interval, setting this optional, default 12hrs.
+      - SCRUB_HEADER= # Optional, add more/different scrub values, does not override the defaults
+      - REMOVE_TERMS= # Optional, add more/different remove term values, does not override the defaults
+      - REPLACE_TERMS # Optional, add more/different replace values, does not override the defaults
+      - CLEANERS= # Optional, add more/different cleaner values, does not override the defaults
+      - LIVE_TV= # Default is false, true will make a combined livetv.m3u from all live tv streams in M3U_URL
+      - UNSORTED= # Default is false, true will put Unsorted_VOD at same path as the other VOD folders.
+      - USER_NAME="Choose_Username" # Username that will be used to log into the server.
+      - PASSWORD="Choose_Password" # Password that will be used to log into the server.
+      - EPG_URL="https://epg_url.com, https://epg2_url.com, etc..."
+        volumes:
+      - movie_vod_volume:/usr/src/app/VODS/Movie_VOD/
+      - tv_vod_volume:/usr/src/app/VODS/TV_VOD/
+      - live_tv:/usr/src/app/VODS/Live_TV/
+      - branding:/usr/src/app/server_cfg
+    networks:
+      ezpznet:
+        ipv4_address: 10.21.12.7
+      default:
+
+  Jellyfin:
+    image: lscr.io/linuxserver/jellyfin:latest
+    container_name: Jellyfin
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    # - JELLYFIN_PublishedServerUrl=0.0.0.0 #optional
     volumes:
-      - /path/to/your/media/library:/usr/src/app/VODS
-      - /path/to/your/media/library:/usr/src/app/logs/
+      - config_volume:/config
+      - tv_vod_volume:/data/tvshows
+      - movie_vod_volume:/data/movies
+      - live_tv:/data
+      - branding:/usr/share/jellyfin/web/assets/img/
+    ports:
+      - 8096:8096
+      - 8920:8920 # optional
+      - 7359:7359/udp # optional
+      - 1900:1900/udp # optional
+    networks:
+      ezpznet:
+        ipv4_address: 10.21.12.8
+      default:
+    restart: unless-stopped
+
+networks:
+  ezpznet:
+    ipam:
+      driver: default
+      config:
+        - subnet: "10.21.12.0/28"
+
+volumes:
+  server_cfg_volume:
+  live_tv:
+  movie_vod_volume:
+  tv_vod_volume:
+  config_volume:
+  branding:
 ```
 
 | ENV VARIABLE  | VALUE  | DESCRIPTION | EXAMPLE | DEFAULT VALUES |
@@ -36,6 +84,8 @@ services:
 
 ### Basic Information
 
+You can see the log from each time the parser script runs by going to Jellyfin>dashboard>logs>ezpztv_logs
+ 
 Most of the information used to create the file and folder structure is derived from the group-title value in the m3u files #EXTINF line.
 There are 5 types of streams that are defined.
 
@@ -51,12 +101,20 @@ There are 5 types of streams that are defined.
 
 
 ### Examples and Explanations
-**DEFAULT VALUES**
+
+## **DEFAULT VALUES**
 All default values can be added to by entering more values into the appropriate env variable in the compose file.
 
-**SCRUB_HEADER**
+## **SCRUB_HEADER**
 
-First thing to do would be to look at a line from one or all of the m3u files you plan to parse. The SCRUB_HEADER value should be a string of characters that is in each 'group-title=' value of the #EXTINF line. Take the below as an example, you can see that in each of the group-title= value that there is the string **"Movie VOD",HD :** that comes before each movie title and year. To "scrub" this line, you could add "HD :" to the SCRUB_HEADER value in the compose, and it will remove the value + everything that precedes it. This is required to correctly parse the titles, year, and other information for TV and Movies. The SCRUB_HEADER function is applied to all lines in the m3u file, while REMOVE_TERMS is applied to all titles that are set in the CLEANERS value, while live tv streams are processed separately without SRUB_HEADER or REMOVE_TERMS applied.
+**You can add multiple SCRUB_HEADER values to accomodate varying m3u naming formats. All values go in a single set of quotes, and are separated by commas. SCRUB_HEADER="HD :, SD :"**
+
+**Trailing whitespaces will be stripped, so in this example you do not need to add a space after the : but the space in beween HD and the : will and should be included in the SCRUB_HEADER value.**
+
+
+If you need to add more scrub header values, the first thing to do would be to look at a line from one or all of the m3u files you plan to parse. The SCRUB_HEADER value should be a string of characters that is in each 'group-title=' value of the #EXTINF line. Take the below as an example, you can see that in each of the group-title= value that there is the string **"Movie VOD",HD :** that comes before each movie title and year. To "scrub" this line, you could add "HD :" to the SCRUB_HEADER value in the compose, and it will remove the value + everything that precedes it. This is required to correctly parse the titles, year, and other information for TV and Movies. The SCRUB_HEADER function is applied to all lines in the m3u file, while REMOVE_TERMS is applied to all titles that are set in the CLEANERS value, and live tv streams are processed separately without SRUB_HEADER or REMOVE_TERMS applied.
+
+Example of m3u file, where SCRUB_HEAD="HD :" will leave a clean movie title entry.
 ```
 #EXTINF:0 group-title="Movie VOD",HD : The Crow 1994
 #EXTGRP:Movie VOD
@@ -65,35 +123,34 @@ https://streamurl.from.provider
 #EXTGRP:Movie VOD
 https://streamurl.from.provider
 ```
-You can add multiple SCRUB_HEADER values to accomodate varying m3u naming formats. All values go in a single set of quotes, and are seperated by commas. SCRUB_HEADER="HD :, SD :"
+## **REMOVE_TERMS & CLEANERS**
 
-Trailing whitespaces will be stripped, so in this example you do not need to add a space after the : but the space in beween HD and the : will and should be included in the SCRUB_HEADER value.
-
-**REPLACE_TERMS**
-
-Applies to all types of streams except live tv. This will replace one "term" with another "term". The syntax to use is "term you want gone=term you want instead". A term can be any string of characters.  The default for REPLACE_TERMS is "1/2=\u00BD, /=-" which will take 1/2 and replace it with the unicode character &frac12; And replace any / with a -
-
-Another example would be replacing a : with a - so in your compose file add this to the REPLACE_TERMS=":=-" To add multiple terms separate them with a , but enclose the entire value in "" So it would look like this REPLACE_TERMS=":=-, something=else, this=that" Currently replacing a ',' with something is not supported.
-
-
-**REMOVE_TERMS & CLEANERS**
-
-Similar to the SCRUB_HEADER but removes the value of the term + any attatched characters. For titles that have "**x264-somegarbage**", your REMOVE_TERMS value should be x264. This will remove the entire 'x264-somegarbage' line. This is case sensitive, so it is best to include both variations for values. A typical REMOVE_TERMS line in a compose file would look like REMOVE_TERMS="x264, X264, HDTV, WEB, 720, x265, X265" *this is now the default. The REMOVE_TERMS will only apply to titles of values in the CLEANERS. So, if you find that only series (TV that has seasons and episodes) and tv shows (shows with 'air-date') then your CLEANERS line in the compose file should be CLEANERS=series,tv. *tv category is now set to default for cleaners. Another example of using these env vars would be if your movie titles contain a language in them, i.e Tropic Thunder [SP] (2012). So the [SP] would be the term you put in ```REMOVE_TERMS="[SP]"``` and add movies to ```CLEANERS=movies```
+Similar to the SCRUB_HEADER but removes the value of the term + any attatched characters. For titles that have "**x264-somegarbage**", your REMOVE_TERMS value should be x264. This will remove the entire 'x264-somegarbage' line. This is case sensitive, so it is best to include both variations for values. A typical REMOVE_TERMS line in a compose file would look like REMOVE_TERMS="x264, X264, HDTV, WEB, 720, x265, X265" *this is now the default. The REMOVE_TERMS will only apply to titles of values in the CLEANERS. So, if you find that only series (TV shows that have seasons and episodes) and tv shows (shows with 'air-date') then your CLEANERS line in the compose file should be CLEANERS=series,tv. **tv category is now set to default for cleaners.** Another example of using these env vars would be if your movie titles contain a language in them, i.e Tropic Thunder [SP] (2012). So the [SP] would be the term you put in ```REMOVE_TERMS="[SP]"``` and add movies to ```CLEANERS=movies```
 
 >series = shows with season/episodes, tv = shows with 'air-dates', movie = movie, unsorted = unsorted
 
-**LIVE TV STREAMS**
+## **LIVE TV STREAMS**
 
-Any m3u url supplied in the compose file will work with mixed live-tv/VOD content. It will take any live tv stream and create a livetv.m3u that contains any live tv stream found in any of the m3u urls. If you want to have this livetv.m3u file, set LIVE_TV=true in the compose file, and it will appear next to your VOD folders at the specified volume mount.
+Any m3u url supplied in the compose file will work with mixed live-tv/VOD content. It will take any live tv stream and create a livetv.m3u that contains any live tv stream found in all of the m3u urls. If you want to have this livetv.m3u file, set LIVE_TV=true in the compose file, and it will appear next to your VOD folders at the specified volume mount, where it will be added to the Jellyfin server.
 
-**UNSORTED**
+## **UNSORTED**
 
-Any unidentified movie or show will end up in this folder. It normally is because; the movie title lacks a release date, random numbers at the end of the show or movie title, or some other poorly named title from the provider. To have this folder placed next to your other VOD folders, set UNSORTED=true
+Any unidentified movie or show will end up in this folder. It normally is because; the movie title lacks a release date, random numbers at the end of the show or movie title, or some other poorly named title from the provider. To have this folder placed next to your other VOD folders, set UNSORTED=true. You can then add this as a library to your Jellyfin server manually, and use the web-ui to edit the titles to their appropriate value.
 
 ### Additional Options
 
-I suggest creating a folder named VODS that your media server has access to. Or a more direct way may be is to map the folders to a directory accessible to Jellyfin, but not directly in an existing library. So for example, in m3uparser compose file use volume /home/user/media/:/usr/src/app/VODS. Then in your jellyfin compose file have /home/user/media/:/data/ 
+**Additional Options**
 
-That will create the TV VOD and Movie VOD folders in the directory that Jellyfin can access, and then add those as either new libraries,or edit your current TV Show and Movie library to include those VOD folders.
+If something goes wrong with the initial setup, from the directory of the compose file run 'docker compose down -v' and then try restarting the container. If that does not work, run the container then:
+```
+docker exec -it ezpztv /bin/bash
+cat "/usr/src/app/logs/log_file.log"
+```
 
-I myself separate my VOD .strm library from my digital library. As in, in my jellyfin server I have each a Movies, TV Shows, Movie VOD, TV VOD library. This allows some flexibility if for some reason a VOD library needs to be rebuilt or something goes wrong, it doesnt affect my non .strm library. However, either way should work just fine.
+Real time monitoring is enabled for all media libraries, and after the first library scan completes, the scheduled task for preforming a library scan will be disabled. If you have trouble getting new items to populate in the recently added section, then this may be an issue with inotify. See Jellyfin docs here about this issue and resolution https://jellyfin.org/docs/general/administration/troubleshooting/#real-time-monitoring or the github here for more details https://github.com/guard/listen?tab=readme-ov-file#the-technical-details
+
+Running the command below on your host (not in the container) will more than likely resolve the issue.
+```
+$ sudo sh -c "echo fs.inotify.max_user_watches=524288 >> /etc/sysctl.conf"
+$ sudo sysctl -p
+```

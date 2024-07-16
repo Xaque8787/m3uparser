@@ -146,7 +146,7 @@ def add_tuner_host(client):
 # Add EPG to Tuners (m3u file or url)
 #====================================
 
-def add_epg_xml(client):
+def add_epg_xml_single(client):
     
     epg_data = {
         "Type": "XMLTV",
@@ -175,6 +175,44 @@ def add_epg_xml(client):
 
     except Exception as e:
         print(f"Failed to add EPG XML: {e}")
+
+#====================================
+# Add EPG to Tuners (m3u file or url)
+#====================================
+def add_epg_xml(client):
+    # Ensure epg_path is a list, even if it's a single URL
+    if isinstance(epg_path, str):
+        epg_urls = [epg_path]
+    else:
+        epg_urls = epg_path
+
+    headers = client.jellyfin.get_default_headers()
+    headers.update({
+        "Content-Type": "application/json"
+    })
+
+    for url in epg_urls:
+        epg_data = {
+            "Type": "XMLTV",
+            "Path": url,
+            "EnableAllTuners": True
+        }
+
+        try:
+            response = client.jellyfin.send_request(
+                jellyfin_url,
+                "LiveTv/ListingProviders",
+                method="post",
+                headers=headers,
+                data=json.dumps(epg_data)
+            )
+
+            if response.status_code == 200:
+                print(f"EPG XML for {url} added successfully.")
+            else:
+                print(f"Failed to add EPG XML for {url}. Status Code: {response.status_code}")
+        except Exception as e:
+            print(f"Exception occurred while adding EPG XML for {url}: {e}")
 
 #====================================
 # Disable scheduled library refresh

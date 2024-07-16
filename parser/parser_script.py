@@ -1,7 +1,7 @@
 from processors import *
 from utils import *
 from config import *
-
+from jellyfin_api import *
 
 def main():
     try:
@@ -47,6 +47,13 @@ def main():
         errz(errors)
         # Output results
         final_output(errors, livetv_channels_count, movie_strm_count, tv_strm_count, unsorted_strm_count)
+        # Run Jellyfin server set-up and/or ezpztv_task
+        if init_var['SERVER_CFG'] is True:
+            ezpztv_task()
+        if not init_var['SERVER_CFG']:
+            wait_for_server()
+            ezpztv_setup()
+            update_env_file('SERVER_SETUP', 'True')
         # Wait interval time to re-run script
         wait_time = int(init_var['HOURS']) * 3600
         run_timer(main, wait_time)

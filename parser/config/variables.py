@@ -1,5 +1,4 @@
 import os
-
 from dotenv import load_dotenv
 
 
@@ -68,9 +67,10 @@ def initialize_vars(process_env_variable, str_to_bool, process_env_special, *arg
         'CLEANERS_DEFAULTS': process_env_variable(os.getenv('CLEANERS_DEFAULTS', "")),
         'UNSORTED': str_to_bool(os.getenv('UNSORTED', "")),
         'jellyfin_url': os.getenv('JELLYFIN_URL', ""),
-        'epg_path': os.getenv('EPG_URL', ""),
+        'epg_path': process_env_variable(os.getenv('EPG_URL', "")),
         'server_name': os.getenv('SERVER_NAME', ""),
         'live_tv': str_to_bool(os.getenv('LIVE_TV', "")),
+        'APIKEY': os.getenv('API_KEY', ""),
         'SERVER_CFG': str_to_bool(os.getenv('SERVER_SETUP', ""))
 
     }
@@ -124,6 +124,7 @@ def vars_position(process_env_variable, str_to_bool, process_env_special, *args)
         'epg_path': os.getenv('EPG_URL', ""),
         'server_name': os.getenv('SERVER_NAME', ""),
         'live_tv': str_to_bool(os.getenv('LIVE_TV', "")),
+        'APIKEY': os.getenv('API_KEY', ""),
         'SERVER_CFG': str_to_bool(os.getenv('SERVER_SETUP', ""))
 
     }
@@ -180,19 +181,25 @@ def cleaner_value(process_env_variable):
 
 
 def jelly_vars(str_to_bool):
+    script_dir = os.path.dirname(os.path.dirname(__file__))
+    root_dir = os.path.dirname(script_dir)
 
     variables = {
 
         'main_user': os.getenv('USER_NAME', ""),
         'main_pass': os.getenv('PASSWORD', ""),
         'jellyfin_url': os.getenv('JELLYFIN_URL', ""),
+        'setup_user': 'jellyfin',
+        'setup_pass': 'jellyfin',
         'epg_path': os.getenv('EPG_URL', ""),
         'server_name': os.getenv('SERVER_NAME', ""),
-        'live_tv': str_to_bool(os.getenv('LIVE_TV', ""))
+        'live_tv': str_to_bool(os.getenv('LIVE_TV', "")),
+        'APIKEY': os.getenv('API_KEY', ""),
+        'logs': os.path.join(root_dir, "logs")
 
     }
 
-    return variables['jellyfin_url'], variables['server_name'], variables['main_user']
+    return variables['jellyfin_url'], variables['server_name'], variables['main_user'], variables['logs']
 
 
 def update_env_file(key, value):
@@ -200,7 +207,6 @@ def update_env_file(key, value):
     root_dir = os.path.dirname(script_dir)
     cfg_file = os.path.join(root_dir, f'server_cfg/server.cfg')
     env_file = cfg_file
-
     # Read the existing .env file
     with open(env_file, 'r') as f:
         lines = f.readlines()
@@ -221,11 +227,12 @@ def update_env_file(key, value):
         f.writelines(lines)
 
 
-# update_env_file('SERVER_SETUP', 'True')
+#update_env_file('SERVER_SETUP', 'False')
 
 
 # Print configuration for debugging
-# jellyfin_url, server_name, main_user = jelly_vars(str_to_bool)
+# jellyfin_url, server_name, main_user, logs = jelly_vars(str_to_bool)
+# print(f'{logs}/log_file.log')
 # print(jellyfin_url)
 # print(server_name)
 # print(main_user)
