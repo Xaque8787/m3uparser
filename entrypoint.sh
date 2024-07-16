@@ -30,3 +30,4 @@ su -s /bin/bash -c "exec python3 /usr/src/app/parser/parser_script.py" m3uuser
 # Exit the entrypoint script
 echo "Entrypoint script execution completed."
 exit 0
+

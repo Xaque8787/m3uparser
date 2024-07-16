@@ -71,6 +71,7 @@ def initialize_vars(process_env_variable, str_to_bool, process_env_special, *arg
         'epg_path': os.getenv('EPG_URL', ""),
         'server_name': os.getenv('SERVER_NAME', ""),
         'live_tv': str_to_bool(os.getenv('LIVE_TV', "")),
+        'APIKEY': os.getenv('API_KEY', ""),
         'SERVER_CFG': str_to_bool(os.getenv('SERVER_SETUP', ""))
 
     }

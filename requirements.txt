@@ -1,6 +1,8 @@
-certifi==2024.7.4
+certifi==2024.6.2
 charset-normalizer==3.3.2
 idna==3.7
+jellyfin-apiclient-python @ git+https://github.com/Erotemic/jellyfin-apiclient-python.git@b237ea56658ea73e0965ee882d4c102560562d51
 python-dotenv==1.0.1
 requests==2.32.3
 urllib3==2.2.2
+websocket-client==1.8.0

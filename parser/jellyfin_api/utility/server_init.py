@@ -17,10 +17,11 @@ live_tv = serv_var['live_tv']
 server_name = serv_var['server_name']
 log_file_path = f'{serv_var['logs']}/log_file.log'
 epg_path = serv_var['epg_path']
-if epg_path:
-    epg_path = epg_path.strip('"\'')  # Strip both double and single quotes
-else:
-    epg_path = ''
+api_key = serv_var['APIKEY']
+# if epg_path:
+#     epg_path = epg_path.strip('"\'')  # Strip both double and single quotes
+# else:
+#     epg_path = ''
 #================================
 # Initial Server Configuration
 #================================

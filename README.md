@@ -20,6 +20,8 @@ services:
       - CLEANERS=
       - LIVE_TV= # Default is false
       - UNSORTED= # Default is false
+      - JELLYFIN_URL= # The address your server can be located at, include http:// or https://
+      - API_KEY= # The api key that you generated on your existing server.
     volumes:
       - /path/to/your/media/library:/usr/src/app/VODS
       - /path/to/your/media/library:/usr/src/app/logs/
@@ -35,7 +37,8 @@ services:
 |UNSORTED|true/false|Creates a VOD folder for undefined streams, either misspelled or poorly labeled streams|true/false|false|
 
 ### Basic Information
-
+**DEFAULT VALUES**
+All default values can be added to by entering more values into the appropriate env variable in the compose file.
 Most of the information used to create the file and folder structure is derived from the group-title value in the m3u files #EXTINF line.
 There are 5 types of streams that are defined.
 
@@ -49,14 +52,17 @@ There are 5 types of streams that are defined.
 
 + unsorted - Any stream found that does not fit the above
 
+### Jellyfin Integration
+
+You must have a Jellyfin server accessible when using this script with the API_KEY and JELLYFIN_URL env variable. If you supply a address to your working server, and an api key you generated on that server; then when this script is ran it will refresh your library to include any titles that were added to the VOD libraries. If you have LIVE_TV=TRUE, then it will also refresh your tv guide.
+
+JELLYFIN_URL should include http:// or https:// and be surrounded by ""
+
 
 ### Examples and Explanations
-**DEFAULT VALUES**
-All default values can be added to by entering more values into the appropriate env variable in the compose file.
-
 **SCRUB_HEADER**
 
-First thing to do would be to look at a line from one or all of the m3u files you plan to parse. The SCRUB_HEADER value should be a string of characters that is in each 'group-title=' value of the #EXTINF line. Take the below as an example, you can see that in each of the group-title= value that there is the string **"Movie VOD",HD :** that comes before each movie title and year. To "scrub" this line, you could add "HD :" to the SCRUB_HEADER value in the compose, and it will remove the value + everything that precedes it. This is required to correctly parse the titles, year, and other information for TV and Movies. The SCRUB_HEADER function is applied to all lines in the m3u file, while REMOVE_TERMS is applied to all titles that are set in the CLEANERS value, while live tv streams are processed separately without SRUB_HEADER or REMOVE_TERMS applied.
+First thing to do would be to look at a line from one or all of the m3u files you plan to parse. The SCRUB_HEADER value should be a string of characters that is in each 'group-title=' value of the #EXTINF line. Take the below as an example, you can see that in each of the group-title= value that there is the string **"Movie VOD",HD :** that comes before each movie title and year. To "scrub" this line, you could add "HD :" to the SCRUB_HEADER value in the compose, and it will remove the value + everything that precedes it. This is required to correctly parse the titles, year, and other information for TV and Movies. The SCRUB_HEADER function is applied to all lines in thr m3u file, while REMOVE_TERMS is applied to all titles that are set in the CLEANERS value, while live tv streams are processed separately without SRUB_HEADER or REMOVE_TERMS applied.
 ```
 #EXTINF:0 group-title="Movie VOD",HD : The Crow 1994
 #EXTGRP:Movie VOD
@@ -68,13 +74,6 @@ https://streamurl.from.provider
 You can add multiple SCRUB_HEADER values to accomodate varying m3u naming formats. All values go in a single set of quotes, and are seperated by commas. SCRUB_HEADER="HD :, SD :"
 
 Trailing whitespaces will be stripped, so in this example you do not need to add a space after the : but the space in beween HD and the : will and should be included in the SCRUB_HEADER value.
-
-**REPLACE_TERMS**
-
-Applies to all types of streams except live tv. This will replace one "term" with another "term". The syntax to use is "term you want gone=term you want instead". A term can be any string of characters.  The default for REPLACE_TERMS is "1/2=\u00BD, /=-" which will take 1/2 and replace it with the unicode character &frac12; And replace any / with a -
-
-Another example would be replacing a : with a - so in your compose file add this to the REPLACE_TERMS=":=-" To add multiple terms separate them with a , but enclose the entire value in "" So it would look like this REPLACE_TERMS=":=-, something=else, this=that" Currently replacing a ',' with something is not supported.
-
 
 **REMOVE_TERMS & CLEANERS**
 

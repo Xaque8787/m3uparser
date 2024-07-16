@@ -18,6 +18,8 @@ ENV REMOVE_DEFAULTS="720p, WEB, h264, H264, HDTV, x264"
 ENV CLEANERS_DEFAULTS=tv
 ENV LIVE_TV=false
 ENV UNSORTED=false
+ENV JELLYFIN_URL=
+ENV API_KEY=
 
 RUN chmod +x entrypoint.sh && chmod +x /usr/src/app/parser/parser_script.py
 

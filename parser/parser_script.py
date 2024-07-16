@@ -1,7 +1,7 @@
 from processors import *
 from utils import *
 from config import *
-
+from jellyfin_api import apikey_jellyfin, ping_server
 
 def main():
     try:
@@ -47,6 +47,13 @@ def main():
         errz(errors)
         # Output results
         final_output(errors, livetv_channels_count, movie_strm_count, tv_strm_count, unsorted_strm_count)
+        # Check for API_KEY and jellyfin_url
+        if init_var['APIKEY'] and init_var['jellyfin_url']:
+            value = ping_server(max_retries=8, interval=7)
+            if value == "continue":
+                if init_var['live_tv']:
+                    apikey_jellyfin.run_guide_task()
+                apikey_jellyfin.run_library_task()
         # Wait interval time to re-run script
         wait_time = int(init_var['HOURS']) * 3600
         run_timer(main, wait_time)
@@ -57,3 +64,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

@@ -4,7 +4,7 @@ from parser.jellyfin_api.libraries import library_mgmt
 from parser.jellyfin_api.utility.server_init import live_tv, log_file_path
 
 
-def ezpztv():
+def ezpztv_setup():
     try:
         
         server_init.configure_server()
@@ -28,6 +28,8 @@ def ezpztv():
         main_client = user_mgmt.client_main_user()
         
         library_mgmt.library_options(main_client)
+
+        library_mgmt.library_refresh_disable(main_client)
         
         user_mgmt.delete_user(main_client, setup_user_id)
         
@@ -40,4 +42,4 @@ def ezpztv():
 
 
 if __name__ == "__main__":
-    ezpztv()
+    ezpztv_setup()
