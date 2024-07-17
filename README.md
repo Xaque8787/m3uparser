@@ -22,7 +22,7 @@ services:
       - USER_NAME=Choose_Username # Username that will be used to log into the server.
       - PASSWORD=Choose_Password # Password that will be used to log into the server.
       - EPG_URL="https://epg_url.com, https://epg2_url.com, etc..."
-        volumes:
+    volumes:
       - movie_vod_volume:/usr/src/app/VODS/Movie_VOD/
       - tv_vod_volume:/usr/src/app/VODS/TV_VOD/
       - live_tv:/usr/src/app/VODS/Live_TV/
