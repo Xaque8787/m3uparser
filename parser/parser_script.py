@@ -49,6 +49,7 @@ def main():
         final_output(errors, livetv_channels_count, movie_strm_count, tv_strm_count, unsorted_strm_count)
         # Run Jellyfin server set-up and/or ezpztv_task
         if init_var['SERVER_CFG'] is True:
+            wait_for_server()
             ezpztv_task()
         if not init_var['SERVER_CFG']:
             wait_for_server()

@@ -19,14 +19,14 @@ services:
       - CLEANERS= # Optional, add more/different cleaner values, does not override the defaults
       - LIVE_TV= # Default is false, true will make a combined livetv.m3u from all live tv streams in M3U_URL
       - UNSORTED= # Default is false, true will put Unsorted_VOD at same path as the other VOD folders.
-      - USER_NAME="Choose_Username" # Username that will be used to log into the server.
-      - PASSWORD="Choose_Password" # Password that will be used to log into the server.
+      - USER_NAME=Choose_Username # Username that will be used to log into the server.
+      - PASSWORD=Choose_Password # Password that will be used to log into the server.
       - EPG_URL="https://epg_url.com, https://epg2_url.com, etc..."
         volumes:
       - movie_vod_volume:/usr/src/app/VODS/Movie_VOD/
       - tv_vod_volume:/usr/src/app/VODS/TV_VOD/
       - live_tv:/usr/src/app/VODS/Live_TV/
-      - branding:/usr/src/app/server_cfg
+      - server_cfg_volume:/usr/src/app/server_cfg/
     networks:
       ezpznet:
         ipv4_address: 10.21.12.7
@@ -45,7 +45,6 @@ services:
       - tv_vod_volume:/data/tvshows
       - movie_vod_volume:/data/movies
       - live_tv:/data
-      - branding:/usr/share/jellyfin/web/assets/img/
     ports:
       - 8096:8096
       - 8920:8920 # optional
@@ -70,7 +69,6 @@ volumes:
   movie_vod_volume:
   tv_vod_volume:
   config_volume:
-  branding:
 ```
 
 | ENV VARIABLE  | VALUE  | DESCRIPTION | EXAMPLE | DEFAULT VALUES |
@@ -100,12 +98,12 @@ There are 5 types of streams that are defined.
 + unsorted - Any stream found that does not fit the above
 
 
-### Examples and Explanations
+## Examples and Explanations
 
-## **DEFAULT VALUES**
+### **DEFAULT VALUES**
 All default values can be added to by entering more values into the appropriate env variable in the compose file.
 
-## **SCRUB_HEADER**
+### **SCRUB_HEADER**
 
 **You can add multiple SCRUB_HEADER values to accomodate varying m3u naming formats. All values go in a single set of quotes, and are separated by commas. SCRUB_HEADER="HD :, SD :"**
 
@@ -123,23 +121,21 @@ https://streamurl.from.provider
 #EXTGRP:Movie VOD
 https://streamurl.from.provider
 ```
-## **REMOVE_TERMS & CLEANERS**
+### **REMOVE_TERMS & CLEANERS**
 
 Similar to the SCRUB_HEADER but removes the value of the term + any attatched characters. For titles that have "**x264-somegarbage**", your REMOVE_TERMS value should be x264. This will remove the entire 'x264-somegarbage' line. This is case sensitive, so it is best to include both variations for values. A typical REMOVE_TERMS line in a compose file would look like REMOVE_TERMS="x264, X264, HDTV, WEB, 720, x265, X265" *this is now the default. The REMOVE_TERMS will only apply to titles of values in the CLEANERS. So, if you find that only series (TV shows that have seasons and episodes) and tv shows (shows with 'air-date') then your CLEANERS line in the compose file should be CLEANERS=series,tv. **tv category is now set to default for cleaners.** Another example of using these env vars would be if your movie titles contain a language in them, i.e Tropic Thunder [SP] (2012). So the [SP] would be the term you put in ```REMOVE_TERMS="[SP]"``` and add movies to ```CLEANERS=movies```
 
 >series = shows with season/episodes, tv = shows with 'air-dates', movie = movie, unsorted = unsorted
 
-## **LIVE TV STREAMS**
+### **LIVE TV STREAMS**
 
 Any m3u url supplied in the compose file will work with mixed live-tv/VOD content. It will take any live tv stream and create a livetv.m3u that contains any live tv stream found in all of the m3u urls. If you want to have this livetv.m3u file, set LIVE_TV=true in the compose file, and it will appear next to your VOD folders at the specified volume mount, where it will be added to the Jellyfin server.
 
-## **UNSORTED**
+### **UNSORTED**
 
 Any unidentified movie or show will end up in this folder. It normally is because; the movie title lacks a release date, random numbers at the end of the show or movie title, or some other poorly named title from the provider. To have this folder placed next to your other VOD folders, set UNSORTED=true. You can then add this as a library to your Jellyfin server manually, and use the web-ui to edit the titles to their appropriate value.
 
 ### Additional Options
-
-**Additional Options**
 
 If something goes wrong with the initial setup, from the directory of the compose file run 'docker compose down -v' and then try restarting the container. If that does not work, run the container then:
 ```
