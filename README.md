@@ -105,12 +105,12 @@ All default values can be added to by entering more values into the appropriate 
 
 ### **SCRUB_HEADER**
 
-**You can add multiple SCRUB_HEADER values to accomodate varying m3u naming formats. All values go in a single set of quotes, and are separated by commas. SCRUB_HEADER="HD :, SD :"**
+**You can add multiple SCRUB_HEADER values to accommodate varying m3u naming formats. All values go in a single set of quotes, and are separated by commas. SCRUB_HEADER="HD :, SD :"**
 
-**Trailing whitespaces will be stripped, so in this example you do not need to add a space after the : but the space in beween HD and the : will and should be included in the SCRUB_HEADER value.**
+**Trailing whitespaces will be stripped, so in this example you do not need to add a space after the : but the space in between HD and the : will and should be included in the SCRUB_HEADER value.**
 
 
-If you need to add more scrub header values, the first thing to do would be to look at a line from one or all of the m3u files you plan to parse. The SCRUB_HEADER value should be a string of characters that is in each 'group-title=' value of the #EXTINF line. Take the below as an example, you can see that in each of the group-title= value that there is the string **"Movie VOD",HD :** that comes before each movie title and year. To "scrub" this line, you could add "HD :" to the SCRUB_HEADER value in the compose, and it will remove the value + everything that precedes it. This is required to correctly parse the titles, year, and other information for TV and Movies. The SCRUB_HEADER function is applied to all lines in the m3u file, while REMOVE_TERMS is applied to all titles that are set in the CLEANERS value, and live tv streams are processed separately without SRUB_HEADER or REMOVE_TERMS applied.
+If you need to add more scrub header values, the first thing to do would be to look at a line from one or all of the m3u files you plan to parse. The SCRUB_HEADER value should be a string of characters that is in each 'group-title=' value of the #EXTINF line. Take the below as an example, you can see that in each of the group-title= value that there is the string **"Movie VOD",HD :** that comes before each movie title and year. To "scrub" this line, you could add "HD :" to the SCRUB_HEADER value in the compose, and it will remove the value + everything that precedes it. This is required to correctly parse the titles, year, and other information for TV and Movies. The SCRUB_HEADER function is applied to all lines in the m3u file, while REMOVE_TERMS is applied to all titles that are set in the CLEANERS value, and live tv streams are processed separately without SCRUB_HEADER or REMOVE_TERMS applied.
 
 Example of m3u file, where SCRUB_HEAD="HD :" will leave a clean movie title entry.
 ```
@@ -126,6 +126,16 @@ https://streamurl.from.provider
 Similar to the SCRUB_HEADER but removes the value of the term + any attatched characters. For titles that have "**x264-somegarbage**", your REMOVE_TERMS value should be x264. This will remove the entire 'x264-somegarbage' line. This is case sensitive, so it is best to include both variations for values. A typical REMOVE_TERMS line in a compose file would look like REMOVE_TERMS="x264, X264, HDTV, WEB, 720, x265, X265" *this is now the default. The REMOVE_TERMS will only apply to titles of values in the CLEANERS. So, if you find that only series (TV shows that have seasons and episodes) and tv shows (shows with 'air-date') then your CLEANERS line in the compose file should be CLEANERS=series,tv. **tv category is now set to default for cleaners.** Another example of using these env vars would be if your movie titles contain a language in them, i.e Tropic Thunder [SP] (2012). So the [SP] would be the term you put in ```REMOVE_TERMS="[SP]"``` and add movies to ```CLEANERS=movies```
 
 >series = shows with season/episodes, tv = shows with 'air-dates', movie = movie, unsorted = unsorted
+
+### **REPLACE TERMS**
+
+The default for REPLACE_TERMS is "1/2=\u00BD, /=-" which will take 1/2 and replace it with the unicode character &frac12; And replace any / with a -
+
+To add more add more terms to replace, add them to REPLACE_TERMS= in your compose file. The format is
+
+ ```REPLACE_TERMS="replace=value"``` Where the term you want replaced is to the left of the = sign, and teh value to replace it with is to the right. Separate multiple replacement terms with a , ```REPLACE_TERMS="replace=value, this=that, dont_want=want_instead"```
+
+REPLACE_TERMS is a applied to all types of streams except for live tv.
 
 ### **LIVE TV STREAMS**
 
