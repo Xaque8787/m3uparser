@@ -81,6 +81,17 @@ Similar to the SCRUB_HEADER but removes the value of the term + any attatched ch
 
 >series = shows with season/episodes, tv = shows with 'air-dates', movie = movie, unsorted = unsorted
 
+
+**REPLACE TERMS**
+
+The default for REPLACE_TERMS is "1/2=\u00BD, /=-" which will take 1/2 and replace it with the unicode character &frac12; And replace any / with a -
+
+To add more add more terms to replace, add them to REPLACE_TERMS= in your compose file. The format is
+
+ ```REPLACE_TERMS="replace=value"``` Where the term you want replaced is to the left of the = sign, and teh value to replace it with is to the right. Separate multiple replacement terms with a , ```REPLACE_TERMS="replace=value, this=that, dont_want=want_instead"```
+
+REPLACE_TERMS is a applied to all types of streams except for live tv.
+
 **LIVE TV STREAMS**
 
 Any m3u url supplied in the compose file will work with mixed live-tv/VOD content. It will take any live tv stream and create a livetv.m3u that contains any live tv stream found in any of the m3u urls. If you want to have this livetv.m3u file, set LIVE_TV=true in the compose file, and it will appear next to your VOD folders at the specified volume mount.
