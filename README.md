@@ -1,3 +1,6 @@
+![EZPZTV](logo.png)
+
+
 # m3u|>arser with EZPZTV
 Parse your m3u urls and make a .strm library for media server
 
