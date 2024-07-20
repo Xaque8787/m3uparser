@@ -1,3 +1,6 @@
+![m3uparser](logo.png)
+
+
 # m3u|>arser
 Parse your m3u urls and make a .strm library for media server
 
