@@ -8,9 +8,9 @@ Docker Compose Example
 
 ```
 services:
-  m3uparser:
+  EZPZTV:
     container_name: ezpztv
-    image: xaque87/m3uparser:latest
+    image: xaque87/ezpztv:latest
     environment:
       - PUID=1000 # Defaults 1000 if blank.
       - PGID=1000 # Defaults 1000 if blank.
