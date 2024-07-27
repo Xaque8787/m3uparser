@@ -1,11 +1,9 @@
-from parser.jellyfin_api.utility.server_init import setup_user, main_user
-
-
-#================================
+# ================================
 # Find setup User ID
-#================================
+# ================================
 
-def find_userID(client):
+
+def find_userID(client, setup_user):
     try:
         # Send a request to the 'users' endpoint using the custom method
         response = client.jellyfin._get("Users")
@@ -28,11 +26,12 @@ def find_userID(client):
 
     return None
     
-#================================
+# ================================
 # Find main User ID
-#================================
+# ================================
 
-def find_user_mainID(client):
+
+def find_user_mainID(client, main_user):
     try:
         # Send a request to the 'users' endpoint using the custom method
         response = client.jellyfin._get("Users")

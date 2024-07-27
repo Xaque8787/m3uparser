@@ -1,7 +1,7 @@
 import re
 import shutil
 import os
-from parser.config import process_env_variable, cleaner_value, initialize_vars, str_to_bool, process_env_special
+from parser.config import process_env_variable, cleaner_value
 
 
 def clean_group_title(entry, REMOVE_TERMS, REMOVE_DEFAULTS):
@@ -21,7 +21,7 @@ def clean_group_title(entry, REMOVE_TERMS, REMOVE_DEFAULTS):
                 r'.*?(?=\b[sS]\d{1,3}[eE]\d{1,3}\b|\b[0-9]{1,3}[xX][0-9]{1,3}\b|\b[sS]\d{1,3}[eE]\d{1,3}\b)', value)
             if show_title_match:
                 show_title = show_title_match.group(0).strip()
-                if  cleaners['clean_series']:
+                if cleaners['clean_series']:
                     entry['show_title'] = process_value(show_title_match.group(0),
                                                         remove_terms=REMOVE_TERMS + REMOVE_DEFAULTS).strip()
                     value = re.sub(re.escape(entry['show_title']), '', value).strip()
@@ -170,23 +170,21 @@ def enable_cleaners(cleaners_list):
     return cleaners
 
 
-def clean_up(
-        folders_to_remove=None,
-        files_to_remove=None,
-        directory_to_clean=None
-):
-    init_var = initialize_vars(process_env_variable, str_to_bool, process_env_special)
+def clean_up(m3u_dir, m3u_file_path, master_mov_dir, master_tv_dir, master_unsorted, live_tv, livetv_file,
+             live_tv_dir, UNSORTED, local_unsorted, folders_to_remove=None, files_to_remove=None,
+             directory_to_clean=None):
+
     if directory_to_clean is None:
-        directory_to_clean = init_var['m3u_dir']
+        directory_to_clean = m3u_dir
     if files_to_remove is None:
-        files_to_remove = [init_var['m3u_file_path']]
+        files_to_remove = [m3u_file_path]
     if folders_to_remove is None:
-        folders_to_remove = [init_var['master_mov_dir'], init_var['master_tv_dir'], init_var['master_unsorted']]
-    if init_var['live_tv'] is False:
-        files_to_remove.append(init_var['livetv_file'])
-        folders_to_remove.append(init_var['live_tv_dir'])
-    if init_var['UNSORTED'] is False:
-        folders_to_remove.append(init_var['local_unsorted'])
+        folders_to_remove = [master_mov_dir, master_tv_dir, master_unsorted]
+    if live_tv is False:
+        files_to_remove.append(livetv_file)
+        folders_to_remove.append(live_tv_dir)
+    if UNSORTED is False:
+        folders_to_remove.append(local_unsorted)
 
     # Remove folders and their contents
     for folder in folders_to_remove:

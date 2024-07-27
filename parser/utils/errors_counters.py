@@ -37,6 +37,7 @@ def final_output(errors, livetv_channels_count, movie_strm_count, tv_strm_count,
 
 
 def setup_logging(log_file_path):
+
     with open(log_file_path, 'w'):
         pass
     # Retrieve log level from environment variable or default to INFO
@@ -69,6 +70,7 @@ def setup_logging(log_file_path):
     # Redirect stdout and stderr to loggers
     sys.stdout = StreamToLogger(logging.getLogger('STDOUT'), numeric_level)
     sys.stderr = StreamToLogger(logging.getLogger('STDERR'), logging.ERROR)
+
 
 def log_shut_down():
     logging.shutdown()

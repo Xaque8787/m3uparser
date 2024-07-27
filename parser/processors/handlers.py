@@ -3,6 +3,7 @@ import shutil
 import requests
 from parser.utils import write_to_file
 
+
 def process_live_tv_entries(entries, livetv_file):
     with open(livetv_file, 'w', encoding='utf-8') as f:
         f.write("#EXTM3U\n")
@@ -176,6 +177,7 @@ def prepare_m3us(URLS, m3u_dir, m3u_file_path):
 
     print(f"All files have been combined into {m3u_file_path}")
 
+
 # sync_directories with remove from src if not in dest
 # def sync_directories(src, dest):
 #     # Copy new and updated files from src to dest
@@ -189,7 +191,8 @@ def prepare_m3us(URLS, m3u_dir, m3u_file_path):
 #                 print(f"Created directory: {dest_item}")
 #             sync_directories(src_item, dest_item)
 #         elif os.path.isfile(src_item):
-#             if not os.path.exists(dest_item) or (os.path.exists(dest_item) and os.path.getmtime(src_item) > os.path.getmtime(dest_item)):
+#             if not os.path.exists(dest_item) or (os.path.exists(dest_item) and os.path.getmtime(src_item)
+#             > os.path.getmtime(dest_item)):
 #                 shutil.copy2(src_item, dest_item)
 #                 print(f"Copied file from {src_item} to {dest_item}")
 
