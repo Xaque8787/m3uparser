@@ -3,61 +3,48 @@ from utils import *
 from config import *
 from jellyfin_api import *
 
+
 def main():
     try:
         # Initialize folders
-        dirmake(create_vars)
-        # Initialize variables
-        init_var = initialize_vars(process_env_variable, str_to_bool, process_env_special)
+        vars(dirmake, variables_all, 'server_cfg', 'cfg_file', 'logs', 'm3u_dir', 'livetv_file', 'live_tv_dir',
+             'tv_dir', 'movies_dir', 'unsorted_dir', 'log_file', 'branding_file')
         # Set up logging
-        setup_logging(f'{init_var['logs']}/log_file.log')
+        vars(setup_logging, variables_all, 'log_file')
         # Download & concatenate all m3u urls
-        prepare_m3us(*vars_position(process_env_variable, str_to_bool, process_env_special, 'URLS', 'm3u_dir',
-                                    'm3u_file_path'))
+        vars(prepare_m3us, variables_all, 'URLS', 'm3u_dir', 'm3u_file_path')
         # Parse the m3u file and get a list of dictionaries containing key-value pairs
-        entries, errors = parse_m3u_file(init_var['m3u_file_path'], clean_group_title, process_value,
-                                         *vars_position(process_env_variable, str_to_bool, process_env_special,
-                                                        'REPLACE_TERMS', 'REPLACE_DEFAULTS', 'SCRUB_HEADER',
-                                                        'SCRUB_DEFAULTS', 'REMOVE_TERMS', 'REMOVE_DEFAULTS'))
+        entries, errors = vars(parse_m3u_file, variables_all, 'm3u_file_path', clean_group_title, process_value,
+                               'REPLACE_TERMS', 'REPLACE_DEFAULTS', 'SCRUB_HEADER', 'SCRUB_DEFAULTS', 'REMOVE_TERMS',
+                               'REMOVE_DEFAULTS')
         # Process each entry dictionary and track created .strm files
-        proc_entries(entries, errors, *vars_position(process_env_variable, str_to_bool, process_env_special,
-                                                     'tv_dir', 'movies_dir', 'unsorted_dir'))
+        vars(proc_entries, variables_all, entries, errors, 'tv_dir', 'movies_dir', 'unsorted_dir')
         # Extract live TV entries and process them separately
         live_tv_entries = [entry for entry in entries if entry.get('livetv')]
-        process_live_tv_entries(live_tv_entries, *vars_position(process_env_variable, str_to_bool, process_env_special,
-                                                                'livetv_file'))
-        # Sync items from VOD m3us to local directories
-        sync_directories(*vars_position(process_env_variable, str_to_bool, process_env_special,
-                                        'movies_dir', 'local_mov_dir'))
-        sync_directories(*vars_position(process_env_variable, str_to_bool, process_env_special,
-                                        'tv_dir', 'local_tv_dir'))
-        if init_var['UNSORTED'] is True:
-            sync_directories(*vars_position(process_env_variable, str_to_bool, process_env_special, 'master_unsorted',
-                                            'local_unsorted'))
-        # Move livetv.m3u
-        if init_var['live_tv'] is True:
-            move_files(*vars_position(process_env_variable, str_to_bool, process_env_special, 'livetv_file', 'live_tv_dir'))
+        vars(process_live_tv_entries, variables_all, live_tv_entries, 'livetv_file')
+        # Sync items from VOD m3us to local directories & Move livetv.m3u
+        vars(sync_directories, variables_all, 'movies_dir', 'local_mov_dir')
+        vars(sync_directories, variables_all, 'tv_dir', 'local_tv_dir')
+        vars(torf, variables_all, move_files=move_files, live_tv='live_tv', sync_directories=sync_directories,
+             UNSORTED='UNSORTED')
         # Count .strm files and live TV channels
-        [livetv_channels_count, movie_strm_count, tv_strm_count, unsorted_strm_count] =\
-            count_emup(live_tv_entries, *vars_position(process_env_variable, str_to_bool, process_env_special,
-                                                       'tv_dir', 'movies_dir', 'unsorted_dir'))
+        [livetv_channels_count, movie_strm_count, tv_strm_count, unsorted_strm_count] = vars(count_emup, variables_all,
+                                                                                             live_tv_entries,
+                                                                                             'tv_dir', 'movies_dir',
+                                                                                             'unsorted_dir')
         # Clean-up files and folders
-        clean_up()
+        vars(clean_up, variables_all, 'm3u_dir', 'm3u_file_path', 'master_mov_dir', 'master_tv_dir',
+             'master_unsorted', 'live_tv', 'livetv_file', 'live_tv_dir', 'UNSORTED', 'local_unsorted')
         # Output errors if any
         errz(errors)
         # Output results
         final_output(errors, livetv_channels_count, movie_strm_count, tv_strm_count, unsorted_strm_count)
         # Run Jellyfin server set-up and/or ezpztv_task
-        if init_var['SERVER_CFG'] is True:
-            wait_for_server()
-            ezpztv_task()
-        if not init_var['SERVER_CFG']:
-            wait_for_server()
-            ezpztv_setup()
-            update_env_file('SERVER_SETUP', 'True')
+        vars(torf, variables_all, SERVER_CFG='SERVER_CFG', wait_for_server=wait_for_server,  ezpztv_task=ezpztv_task,
+             ezpztv_setup=ezpztv_setup, application_version='application_version', APIKEY='APIKEY',
+             jellyfin_url='jellyfin_url', apikey_run=apikey_run)
         # Wait interval time to re-run script
-        wait_time = int(init_var['HOURS']) * 3600
-        run_timer(main, wait_time)
+        vars(run_timer, variables_all, main, 'HOURS')
 
     except Exception as e:
         print(f"An error occurred: {e}")

@@ -1,41 +1,52 @@
-from parser.jellyfin_api.utility import server_init, logs, find_values
-from parser.jellyfin_api.user_clients import user_mgmt
-from parser.jellyfin_api.libraries import library_mgmt
-from parser.jellyfin_api.utility.server_init import live_tv, log_file_path
+from parser.jellyfin_api.utility import *
+from parser.jellyfin_api.user_clients import *
+from parser.jellyfin_api.libraries import *
+from parser.config.variables import *
+
 
 def ezpztv_setup():
     try:
         print("Running server setup...")
-        server_init.configure_server()
-        
-        client = user_mgmt.create_client()
-        
-        library_mgmt.add_media_libraries(client)
-        
-        if live_tv:
-            library_mgmt.add_tuner_host(client)
-            library_mgmt.add_epg_xml(client)
-        
-        user_mgmt.create_main_user(client)
-        
-        main_user_id = find_values.find_user_mainID(client)
-        
-        user_mgmt.update_policy(client, main_user_id)
-        
-        setup_user_id = find_values.find_userID(client)
-        
-        main_client = user_mgmt.client_main_user()
-        
-        library_mgmt.library_options(main_client)
 
-        library_mgmt.library_refresh_disable(main_client)
+        vars(configure_server, variables_all, 'jellyfin_url', 'setup_user', 'setup_pass')
         
-        user_mgmt.delete_user(main_client, setup_user_id)
+        client = vars(create_client, variables_all, 'jellyfin_url', 'setup_user', 'setup_pass')
         
-        server_init.rebrand_server(main_client)
+        add_media_libraries(client)
         
-        logs.upload_log(log_file_path, main_client)
+        vars(add_tuner_host, variables_all, client, 'jellyfin_url', 'live_tv')
+
+        vars(add_epg_xml, variables_all, client, 'epg_path', 'jellyfin_url', 'live_tv')
         
+        vars(create_main_user, variables_all, client, 'jellyfin_url', 'main_user', 'main_pass')
+        
+        main_user_id = vars(find_user_mainID, variables_all, client, 'main_user')
+        
+        vars(update_policy, variables_all, client, main_user_id, 'jellyfin_url')
+        
+        setup_user_id = vars(find_userID, variables_all, client, 'setup_user')
+        
+        main_client = vars(client_main_user, variables_all, 'jellyfin_url', 'main_user', 'main_pass')
+        
+        vars(library_options, variables_all, main_client, 'jellyfin_url')
+
+        vars(library_refresh_disable, variables_all, main_client, 'jellyfin_url')
+        
+        vars(delete_user, variables_all, main_client, setup_user_id, 'jellyfin_url')
+        
+        vars(rebrand_server, variables_all, main_client, 'jellyfin_url', 'server_name')
+        
+        vars(upload_log, variables_all, main_client, 'log_file', 'jellyfin_url')
+
+        print("Applying brand images...")
+        vars(copy_png_files, variables_all, 'banner-light.png', 'images_file', 'banner_file')
+        vars(copy_png_files, variables_all, 'banner-dark.png', 'images_file', 'banner_file')
+        vars(copy_png_files, variables_all, 'icon-transparent.png', 'images_file', 'banner_file')
+        vars(copy_png_files, variables_all, 'favicon.png', 'images_file', 'logo_file')
+        vars(copy_png_files, variables_all, 'baba78f2a106d9baee83.png', 'images_file', 'logo_file')
+        vars(copy_png_files, variables_all, 'bc8d51405ec040305a87.ico', 'images_file', 'logo_file')
+        vars(copy_png_files, variables_all, 'favicon.ico', 'images_file', 'logo_file')
+
     except Exception as e:
         print(f"An error occurred: {e}")
 

@@ -1,7 +1,7 @@
 import os
-from parser.jellyfin_api.utility.server_init import jellyfin_url
 
-def upload_log(file_path, main_client):
+
+def upload_log(main_client, file_path, jellyfin_url):
     if not os.path.exists(file_path):
         print(f"File does not exist: {file_path}")
         return

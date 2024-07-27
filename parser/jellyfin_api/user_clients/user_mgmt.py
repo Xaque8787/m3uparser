@@ -1,12 +1,12 @@
 from jellyfin_apiclient_python import JellyfinClient
 import json
-from parser.jellyfin_api.utility.server_init import jellyfin_url, main_pass, main_user, setup_user, setup_pass
+
 #================================
 # Create main Jellyfin user
 #================================
 
 
-def create_main_user(client):
+def create_main_user(client, jellyfin_url, main_user, main_pass):
 
     try:
     # Prepare headers for the request
@@ -42,7 +42,7 @@ def create_main_user(client):
 #================================
 
 
-def client_main_user():
+def client_main_user(jellyfin_url, main_user, main_pass):
 
     # Initialize the client
     main_client = JellyfinClient()
@@ -72,7 +72,7 @@ def client_main_user():
 #================================
 
 
-def create_client():
+def create_client(jellyfin_url, setup_user, setup_pass):
     client = JellyfinClient()
     client.config.app(
         name='ezpztv',
@@ -100,7 +100,7 @@ def create_client():
 #================================
 
 
-def delete_user(main_client, user_id):
+def delete_user(main_client, user_id, jellyfin_url):
     try:
         # Prepare headers for the request
         headers = main_client.jellyfin.get_default_headers()
@@ -119,7 +119,8 @@ def delete_user(main_client, user_id):
         if delete_response.status_code == 204:
             print("User deleted successfully.")
         else:
-            print(f"Failed to delete user. Status Code: {delete_response.status_code}, Response: {delete_response.content}")
+            print(f"Failed to delete user. Status Code: {delete_response.status_code},"
+                  f" Response: {delete_response.content}")
 
     except Exception as e:
         print(f"Failed to delete user: {e}")
@@ -130,7 +131,7 @@ def delete_user(main_client, user_id):
 # Update main user settings
 #================================
 
-def update_policy(client, main_user_id):
+def update_policy(client, main_user_id, jellyfin_url):
     try:
         # Prepare headers for the request
         headers = client.jellyfin.get_default_headers()
@@ -161,7 +162,8 @@ def update_policy(client, main_user_id):
         if update_response.status_code == 204:
             print("User policy updated successfully.")
         else:
-            print(f"Failed to update user policy. Status Code: {update_response.status_code}, Response: {update_response.content}")
+            print(f"Failed to update user policy. Status Code: {update_response.status_code},"
+                  f" Response: {update_response.content}")
 
     except Exception as e:
         print(f"Failed to update user policy: {e}")

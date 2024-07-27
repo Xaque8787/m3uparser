@@ -22,8 +22,10 @@ ENV USER_NAME=
 ENV PASSWORD=
 ENV LIVE_TV=False
 ENV EPG_URL=
+ENV REFRESH_LIB=True
 ENV SERVER_NAME=EZPZTV
 ENV API_KEY=
+ENV APP_VERSION=ezpztv
 
 
 RUN chmod +x entrypoint.sh && chmod +x /usr/src/app/parser/parser_script.py
