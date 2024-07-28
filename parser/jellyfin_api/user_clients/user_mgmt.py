@@ -142,7 +142,7 @@ def update_policy(client, main_user_id, jellyfin_url):
         # Define the user policy values to update
         user_policy = {
             "IsAdministrator": True,
-            "EnableAudioPlaybackTranscoding": False,
+            "EnableAudioPlaybackTranscoding": True,
             "EnableVideoPlaybackTranscoding": False,
             "EnableSubtitleManagement": True,
             "EnableContentDeletion": True,
