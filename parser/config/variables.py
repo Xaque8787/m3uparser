@@ -48,7 +48,7 @@ def variables_all(process_env_variable, str_to_bool, process_env_special, *args)
     root_dir = os.path.dirname(script_dir)
     cfg_file = os.path.join(root_dir, f'server_cfg/server.cfg')
     log_file = os.path.join(root_dir, f'logs/log_file.log')
-    load_dotenv(cfg_file)
+    load_dotenv(cfg_file, override=True)
     variables = {
         'script_dir': os.path.dirname(os.path.dirname(__file__)),
         'root_dir': os.path.dirname(script_dir),
