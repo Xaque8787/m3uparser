@@ -15,7 +15,7 @@ services:
       - PUID=1000 # Defaults 1000 if blank.
       - PGID=1000 # Defaults 1000 if blank.
       - M3U_URL= # "https://m3u_URL1.com, https://m3u_URL2.com, etc..."
-      - HOURS=12 # update interval, setting this optional, default 12hrs.
+      - HOURS=12 # update interval, setting this optional, default 8hrs.
       - SCRUB_HEADER= # Optional, add more/different scrub values, does not override the defaults
       - REMOVE_TERMS= # Optional, add more/different remove term values, does not override the defaults
       - REPLACE_TERMS # Optional, add more/different replace values, does not override the defaults
@@ -79,8 +79,10 @@ Default is set to: `"1/2=\u00BD, /=-"`
 
 You must have a Jellyfin server accessible if using this script with the `API_KEY` and `JELLYFIN_URL` env variable. If you supply a address to your working server, and an api key you generated on that server; then when this script is ran it will refresh your library to include any titles that were added to the VOD libraries. If you have LIVE_TV=TRUE, then it will also refresh your tv guide. If you want to ommit the library scan you can add the environment variable `REFRESH_LIB=false`.
 
-JELLYFIN_URL should include http:// or https:// (DO NOT SURROUND WITH "")
-Logs will now be uploaded to the server as well.
+JELLYFIN_URL should include http:// or https:// **DO NOT SURROUND WITH ""**
+
+
+Logs will now be uploaded to the server as well. Dashboard > Logs
 
 ### LIVE TV STREAMS
 
