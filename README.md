@@ -15,7 +15,7 @@ services:
       - PUID=1000 # Defaults 1000 if blank.
       - PGID=1000 # Defaults 1000 if blank.
       - M3U_URL= # "https://m3u_URL1.com, https://m3u_URL2.com, etc..."
-      - HOURS=12 # update interval, setting this optional, default 12hrs.
+      - HOURS=12 # update interval, setting this optional, default 8hrs.
       - SCRUB_HEADER= # Optional, add more/different scrub values, does not override the defaults
       - REMOVE_TERMS= # Optional, add more/different remove term values, does not override the defaults
       - REPLACE_TERMS # Optional, add more/different replace values, does not override the defaults
@@ -23,8 +23,8 @@ services:
       - LIVE_TV= # Default is false, true will make a combined livetv.m3u from all live tv streams in M3U_URL
       - EPG_URL="https://epg_url.com, https://epg2_url.com, etc..."
       - UNSORTED= # Default is false, true will put Unsorted_VOD at same path as the other VOD folders.
-      - USER_NAME=Choose_Username # Username that will be used to log into the server.
-      - PASSWORD=Choose_Password # Password that will be used to log into the server.
+      - USER_NAME=Choose_Username # Required, Username that will be used to log into the server.
+      - PASSWORD=Choose_Password # Required, Password that will be used to log into the server.
 
     volumes:
       - movie_vod_volume:/usr/src/app/VODS/Movie_VOD/
@@ -88,8 +88,8 @@ volumes:
 | UNSORTED      | true/false                                          | Creates a VOD folder for undefined streams, either misspelled or poorly labeled streams                       | true/false                                   | false                               |
 | M3U_URL       | any url(s), in quotes, and seperated with a comma , | Include all URLs you want to be parsed                                                                        | "https://m3u_URL1.com, https://m3u_URL2.com" | n/a                                 |
 | HOURS         | numeric value                                       | Number representing the interval you want to update from m3u urls                                             | 12                                           | 8                                   |
-| USER_NAME     | Pick-a-Username                                     | Choose a username for the admin user of the server                                                            | majordude                                    | basic_user                          |
-| PASSWORD      | Pick-a-Password                                     | Choose a password for the admin user of the server                                                            | some_password                                | basic_pass                          |
+| USER_NAME     | Pick-a-Username                                     | Choose a username for the admin user of the server, **Required**                                              | majordude                                    |                                     |
+| PASSWORD      | Pick-a-Password                                     | Choose a password for the admin user of the server, **Required**                                              | some_password                                |                                     |
 
 ## Basic Information
 
@@ -154,7 +154,7 @@ docker exec -it ezpztv /bin/bash
 cat "/usr/src/app/logs/log_file.log"
 ```
 
-For real-time monitoring issues, increase the inotify watch limit on your host machine:
+For real-time monitoring issues with Jellyfin libraries, increase the inotify watch limit on your host machine:
 
 ```
 sudo sh -c "echo fs.inotify.max_user_watches=524288 >> /etc/sysctl.conf"
