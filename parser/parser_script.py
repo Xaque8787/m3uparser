@@ -8,7 +8,8 @@ def main():
     try:
         # Initialize folders
         vars(dirmake, variables_all, 'server_cfg', 'cfg_file', 'logs', 'm3u_dir', 'livetv_file', 'live_tv_dir',
-             'tv_dir', 'movies_dir', 'unsorted_dir', 'log_file', 'branding_file')
+             'tv_dir', 'movies_dir', 'unsorted_dir', 'log_file', 'branding_file', 'local_tv_dir', 'local_mov_dir',
+             'local_unsorted')
         # Set up logging
         vars(setup_logging, variables_all, 'log_file')
         # Download & concatenate all m3u urls
@@ -23,8 +24,8 @@ def main():
         live_tv_entries = [entry for entry in entries if entry.get('livetv')]
         vars(process_live_tv_entries, variables_all, live_tv_entries, 'livetv_file')
         # Sync items from VOD m3us to local directories & Move livetv.m3u
-        vars(sync_directories, variables_all, 'movies_dir', 'local_mov_dir')
-        vars(sync_directories, variables_all, 'tv_dir', 'local_tv_dir')
+        vars(sync_directories, variables_all, 'movies_dir', 'local_mov_dir', 'remove_sync')
+        vars(sync_directories, variables_all, 'tv_dir', 'local_tv_dir', 'remove_sync')
         vars(torf, variables_all, move_files=move_files, live_tv='live_tv', sync_directories=sync_directories,
              UNSORTED='UNSORTED')
         # Count .strm files and live TV channels

@@ -15,16 +15,18 @@ services:
       - PUID=1000 # Defaults 1000 if blank.
       - PGID=1000 # Defaults 1000 if blank.
       - M3U_URL= # "https://m3u_URL1.com, https://m3u_URL2.com, etc..."
-      - HOURS=12 # update interval, setting this optional, default 8hrs.
+      - HOURS=12 # update interval, setting this optional, default 12hrs.
       - SCRUB_HEADER= # Optional, add more/different scrub values, does not override the defaults
       - REMOVE_TERMS= # Optional, add more/different remove term values, does not override the defaults
       - REPLACE_TERMS # Optional, add more/different replace values, does not override the defaults
       - CLEANERS= # Optional, add more/different cleaner values, does not override the defaults
+      - CLEAN_SYNC= # If set to true will remove titles from VOD folders that are not present in m3u files, Defaults to false if blank.
       - LIVE_TV= # Default is false, true will make a combined livetv.m3u from all live tv streams in M3U_URL
       - EPG_URL="https://epg_url.com, https://epg2_url.com, etc..."
-      - UNSORTED= # Default is false, true will put Unsorted_VOD at same path as the other VOD folders.
-      - USER_NAME=Choose_Username # Required, Username that will be used to log into the server.
-      - PASSWORD=Choose_Password # Required, Password that will be used to log into the server.
+      - UNSORTED= # Default is false if blank, true will put Unsorted_VOD at same path as the other VOD folders.
+      - REFRESH_LIB= # Default is false if blank. Will refresh libraries after each parsing.
+      - USER_NAME=Choose_Username # Username that will be used to log into the server.
+      - PASSWORD=Choose_Password # Password that will be used to log into the server.
 
     volumes:
       - movie_vod_volume:/usr/src/app/VODS/Movie_VOD/
@@ -78,24 +80,36 @@ volumes:
   branding:
 ```
 
-| ENV VARIABLE  | VALUES                                              | DESCRIPTION                                                                                                   | EXAMPLE                                      | DEFAULT VALUES                      |
-| ------------- |:---------------------------------------------------:|:-------------------------------------------------------------------------------------------------------------:|:--------------------------------------------:|:-----------------------------------:|
-| SCRUB_HEADER  | any text, in quotes, and seperated with a comma ,   | Removes value and preceding text from begining of group-title line                                            | "HD :"                                       | "HD :, SD :"                        |
-| REMOVE_TERMS  | any text, in quotes, and seperated with a comma ,   | Removes value(s) set from file and directory names                                                            | "x264, 720p"                                 | "720p, WEB, h264, H264, HDTV, x264" |
-| REPLACE_TERMS | "term-to-replace=replace-value"                     | Replaces one value with another. Separate terms with an = and term on left is replaced with term to the right | "replace-this=with-this"                     | "1/2=\u00BD, /=-"                   |
-| CLEANERS      | series,movie,tv,unsorted                            | Type of stream to apply REMOVE_TERMS value to                                                                 | tv, movies                                   | tv                                  |
-| LIVE_TV       | true/false                                          | Parse live tv streams in m3u urls and creates a single livetv.m3u                                             | true/false                                   | false                               |
-| UNSORTED      | true/false                                          | Creates a VOD folder for undefined streams, either misspelled or poorly labeled streams                       | true/false                                   | false                               |
-| M3U_URL       | any url(s), in quotes, and seperated with a comma , | Include all URLs you want to be parsed                                                                        | "https://m3u_URL1.com, https://m3u_URL2.com" | n/a                                 |
-| HOURS         | numeric value                                       | Number representing the interval you want to update from m3u urls                                             | 12                                           | 8                                   |
-| USER_NAME     | Pick-a-Username                                     | Choose a username for the admin user of the server, **Required**                                              | majordude                                    |                                     |
-| PASSWORD      | Pick-a-Password                                     | Choose a password for the admin user of the server, **Required**                                              | some_password                                |                                     |
+| ENV VARIABLE  | VALUES                                              | DESCRIPTION                                                                                                   | EXAMPLE                                      | DEFAULT VALUES                     |
+| ------------- |:---------------------------------------------------:|:-------------------------------------------------------------------------------------------------------------:|:--------------------------------------------:|:----------------------------------:|
+| M3U_URL       | any url(s), in quotes, and seperated with a comma , | Include all URLs you want to be parsed                                                                        | "https://m3u_URL1.com, https://m3u_URL2.com" | n/a                                |
+| HOURS         | numeric value                                       | Number representing the interval you want to update from m3u urls                                             | 12                                           | 8                                  |
+| SCRUB_HEADER  | any text, in quotes, and seperated with a comma ,   | Removes value and preceding text from begining of group-title line                                            | "HD :"                                       | "HD :, SD :"                       |
+| REMOVE_TERMS  | any text, in quotes, and seperated with a comma ,   | Removes value(s) set from file and directory names                                                            | "x264, 720p"                                 | "720p, WEB, h264,H264, HDTV, x264" |
+| REPLACE_TERMS | "term-to-replace=replace-value"                     | Replaces one value with another. Separate terms with an = and term on left is replaced with term to the right | "replace-this=with-this"                     | "1/2=\u00BD, /=-"                  |
+| CLEANERS      | series,movie,tv,unsorted                            | Type of stream to apply REMOVE_TERMS value to                                                                 | tv, movies                                   | tv                                 |
+| REFRESH_LIB   | true/false                                          | Refresh Jellyfin libraries after parsing                                                                      | false                                        | false                              |
+| CLEAN_SYNC    | true/false                                          | Will remove titles from VOD folders that are not present in m3u.                                              | false                                        | false                              |
+| LIVE_TV       | true/false                                          | Parse live tv streams in m3u urls and creates a single livetv.m3u                                             | true/false                                   | false                              |
+| UNSORTED      | true/false                                          | Creates a VOD folder for undefined streams, either misspelled or poorly labeled streams                       | true/false                                   | false                              |
+| USER_NAME     | Pick-a-Username                                     | Choose a username for the admin user of the server                                                            | majordude                                    | n/a                                |
+| PASSWORD      | Pick-a-Password                                     | Choose a password for the admin user of the server                                                            | some_password                                | n/a                                |
 
-## Basic Information
+## Instalation Process
+
+Copy the above compose file into a docker-compose.yaml file and run `docker compose up -d`
+
+**OR**
+
+Copy the files from the m3uparser directory in the repo and fill out the ezpztv.env file then run `docker compose up -d`
+
+You can either copy the contents of the files manually, clone this repo with git, or download the repo as a zip and extract it.
+
+## Basic m3u Parsing Information
 
 **Add more values to the environment variables in the compose file to extend the defaults.**
 
-You can view the logs from each parser run in Jellyfin under **Dashboard > Logs > ezpztv_logs**.
+### How it works
 
 The parser uses the `group-title` value in the `#EXTINF` line of m3u files to structure the file and folder hierarchy. There are five stream types:
 
@@ -104,6 +118,8 @@ The parser uses the `group-title` value in the `#EXTINF` line of m3u files to st
 - **movies**: Movies with release years.
 - **live-tv**: Live TV streams.
 - **unsorted**: Streams that do not fit into the above categories.
+
+Key=Value pairs are made from each item in the EXTINF line. The values are then used to determine stream type, extract relavent information, and finally clean out unwanted values to then make the end resulting .strm libraries.
 
 ## Examples and Explanations
 
@@ -139,6 +155,18 @@ If you supply url(s) to the `EPG_URL=` variable, they will be added as xmltv gui
 
 `EPG_URL= https://epgurl1.com, http://anotherepg.com"`
 
+### REFRESH_LIB
+
+The default for EZPZTV is to set libraries to real time monitoring. So content is added picked up on the server when it is added from a parser run (interval you set). However you can force a library refresh every interval by setting `REFRESH_LIB=true` in your compose or ezpztv.env file.
+
+Default is set to `REFRESH_LIB=false`
+
+### CLEAN_SYNC
+
+If this is set to true, then every time a parsing of m3u urls is complete, it will add new content from the m3u urls to your VOD libraries, and any content in your VOD libraries that is not in the m3u urls will be removed. This should be used with caution, if you add and remove m3u urls from the env variable often, then this will remove content from the VOD library. If your provider removes content often and you want to keep your VOD libraries in sync with what is available, then setting this to true is useful.
+
+Default is set to `CLEAN_SYNC=false`
+
 ### UNSORTED
 
 Set `UNSORTED=true` to create a VOD folder for poorly named or unidentified streams. This folder can be added manually to your Jellyfin server and edited through the web UI.
@@ -154,7 +182,7 @@ docker exec -it ezpztv /bin/bash
 cat "/usr/src/app/logs/log_file.log"
 ```
 
-For real-time monitoring issues with Jellyfin libraries, increase the inotify watch limit on your host machine:
+For real-time monitoring issues, increase the inotify watch limit on your host machine:
 
 ```
 sudo sh -c "echo fs.inotify.max_user_watches=524288 >> /etc/sysctl.conf"

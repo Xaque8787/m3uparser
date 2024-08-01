@@ -1,12 +1,14 @@
 import os
 
 
-def upload_log(main_client, file_path, jellyfin_url):
+def upload_log(main_client, file_path, jellyfin_url, rerun):
     if not os.path.exists(file_path):
         print(f"File does not exist: {file_path}")
         return
 
     try:
+        print("Uploading logs...")
+        print(f"Re-run set for {rerun} hours.")
         with open(file_path, 'r', encoding='utf-8') as file:
             log_var = file.read().replace('\\n', '\n')
     except Exception as e:

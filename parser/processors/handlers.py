@@ -108,21 +108,6 @@ def proc_entries(entries, errors, tv_dir, movies_dir, unsorted_dir):
         # print(d)
 
 
-def sync_directories(src, dest):
-    for item in os.listdir(src):
-        src_item = os.path.join(src, item)
-        dest_item = os.path.join(dest, item)
-
-        if os.path.isdir(src_item):
-            if not os.path.exists(dest_item):
-                os.makedirs(dest_item)
-            sync_directories(src_item, dest_item)
-        elif os.path.isfile(src_item):
-            if not os.path.exists(dest_item):
-                shutil.copy2(src_item, dest_item)
-                print(f"Added content to {dest_item}")
-
-
 def move_files(file_path, destination_path):
     destination_file_path = os.path.join(destination_path, os.path.basename(file_path))
     if os.path.isfile(destination_file_path):
@@ -141,17 +126,26 @@ def prepare_m3us(URLS, m3u_dir, m3u_file_path):
             print(f"HEAD request to {vodurl} returned status code: {response.status_code}")
 
             if response.status_code == 200:
-                response = requests.get(vodurl)
-                print(f"GET request to {vodurl} returned status code: {response.status_code}")
+                content_type = response.headers.get('Content-Type')
+                content_disposition = response.headers.get('content-disposition')
 
-                # Determine the filename from the URL
-                filename = os.path.basename(vodurl)
-                file_path = os.path.join(m3u_dir, filename)
+                if content_type and 'filename=' in (content_disposition or ''):
+                    response = requests.get(vodurl)
+                    print(f"GET request to {vodurl} returned status code: {response.status_code}")
 
-                # Save the file content
-                with open(file_path, 'wb') as file:
-                    file.write(response.content)
-                print(f"Downloaded file from URL: {vodurl}")
+                    if response.status_code == 200:
+                        # Determine the filename from the URL
+                        filename = os.path.basename(vodurl)
+                        file_path = os.path.join(m3u_dir, filename)
+
+                        # Save the file content
+                        with open(file_path, 'wb') as file:
+                            file.write(response.content)
+                        print(f"Downloaded file from URL: {vodurl}")
+                    else:
+                        print(f"GET request failed for {vodurl} - Status code: {response.status_code}")
+                else:
+                    print(f"URL not valid: {vodurl} - Content-Type or filename missing. Skipping...")
             else:
                 print(f"URL is not accessible: {vodurl} - Status code: {response.status_code}")
         except requests.RequestException as e:
@@ -179,8 +173,50 @@ def prepare_m3us(URLS, m3u_dir, m3u_file_path):
 
 
 # sync_directories with remove from src if not in dest
+def sync_directories(src, dest, remove_sync):
+    if remove_sync:
+        # print("Clean_Sync results:")
+        for item in os.listdir(src):
+            src_item = os.path.join(src, item)
+            dest_item = os.path.join(dest, item)
+
+            if os.path.isdir(src_item):
+                if not os.path.exists(dest_item):
+                    os.makedirs(dest_item)
+                    # print(f"Created directory: {dest_item}")
+                sync_directories(src_item, dest_item, remove_sync)
+            elif os.path.isfile(src_item):
+                if not os.path.exists(dest_item):
+                    shutil.copy2(src_item, dest_item)
+                    print(f"Added content: {dest_item}")
+
+        # Remove files and directories in dest that are not in src
+        for item in os.listdir(dest):
+            dest_item = os.path.join(dest, item)
+            src_item = os.path.join(src, item)
+
+            if not os.path.exists(src_item):
+                if os.path.isdir(dest_item):
+                    shutil.rmtree(dest_item)
+                    print(f"Removed directory: {dest_item}")
+                elif os.path.isfile(dest_item):
+                    os.remove(dest_item)
+                    print(f"Removed file: {dest_item}")
+    else:
+        for item in os.listdir(src):
+            src_item = os.path.join(src, item)
+            dest_item = os.path.join(dest, item)
+
+            if os.path.isdir(src_item):
+                if not os.path.exists(dest_item):
+                    os.makedirs(dest_item)
+                sync_directories(src_item, dest_item, remove_sync)
+            elif os.path.isfile(src_item):
+                if not os.path.exists(dest_item):
+                    shutil.copy2(src_item, dest_item)
+                    print(f"Content added: {dest_item}")
+
 # def sync_directories(src, dest):
-#     # Copy new and updated files from src to dest
 #     for item in os.listdir(src):
 #         src_item = os.path.join(src, item)
 #         dest_item = os.path.join(dest, item)
@@ -188,23 +224,8 @@ def prepare_m3us(URLS, m3u_dir, m3u_file_path):
 #         if os.path.isdir(src_item):
 #             if not os.path.exists(dest_item):
 #                 os.makedirs(dest_item)
-#                 print(f"Created directory: {dest_item}")
 #             sync_directories(src_item, dest_item)
 #         elif os.path.isfile(src_item):
-#             if not os.path.exists(dest_item) or (os.path.exists(dest_item) and os.path.getmtime(src_item)
-#             > os.path.getmtime(dest_item)):
+#             if not os.path.exists(dest_item):
 #                 shutil.copy2(src_item, dest_item)
-#                 print(f"Copied file from {src_item} to {dest_item}")
-
-    # Remove files and directories in dest that are not in src
-    # for item in os.listdir(dest):
-    #     dest_item = os.path.join(dest, item)
-    #     src_item = os.path.join(src, item)
-    #
-    #     if not os.path.exists(src_item):
-    #         if os.path.isdir(dest_item):
-    #             shutil.rmtree(dest_item)
-    #             print(f"Removed directory: {dest_item}")
-    #         elif os.path.isfile(dest_item):
-    #             os.remove(dest_item)
-    #             print(f"Removed file: {dest_item}")
+#                 print(f"Added content to {dest_item}")
