@@ -1,6 +1,6 @@
 from parser.jellyfin_api.utility import ping_server, upload_log
 from parser.jellyfin_api.user_clients import client_main_user
-from parser.jellyfin_api.libraries import run_scheduled_task
+from parser.jellyfin_api.libraries import run_scheduled_task, run_library_task
 from parser.config.variables import *
 
 
@@ -11,7 +11,8 @@ def ezpztv_task():
         if value == "continue":
             main_client = vars(client_main_user, variables_all, 'jellyfin_url', 'main_user', 'main_pass')
             vars(run_scheduled_task, variables_all, main_client, 'jellyfin_url', 'live_tv')
-            vars(upload_log, variables_all, main_client, 'log_file', 'jellyfin_url')
+            vars(run_library_task, variables_all, main_client, 'jellyfin_url', 'lib_refresh')
+            vars(upload_log, variables_all, main_client, 'log_file', 'jellyfin_url', 'HOURS')
         else:
             exit(0)
 

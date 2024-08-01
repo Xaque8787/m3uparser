@@ -167,3 +167,6 @@ def update_policy(client, main_user_id, jellyfin_url):
 
     except Exception as e:
         print(f"Failed to update user policy: {e}")
+
+
+# if __name__ == "__main__":

@@ -33,6 +33,7 @@ def process_env_special(env_var_value):
 
 # Environment variables
 def cleaner_value(process_env_variable):
+    load_dotenv()
 
     cleaner_value = {
         'CLEANERS': process_env_variable(os.getenv('CLEANERS', "")),
@@ -48,6 +49,8 @@ def variables_all(process_env_variable, str_to_bool, process_env_special, *args)
     root_dir = os.path.dirname(script_dir)
     cfg_file = os.path.join(root_dir, f'server_cfg/server.cfg')
     log_file = os.path.join(root_dir, f'logs/log_file.log')
+    env_file = os.path.join(script_dir, 'config.env')
+    load_dotenv(env_file)
     load_dotenv(cfg_file, override=True)
     variables = {
         'script_dir': os.path.dirname(os.path.dirname(__file__)),
@@ -92,8 +95,8 @@ def variables_all(process_env_variable, str_to_bool, process_env_special, *args)
         'live_tv': str_to_bool(os.getenv('LIVE_TV', "")),
         'APIKEY': os.getenv('API_KEY', ""),
         'application_version': os.getenv('APP_VERSION', ""),
-        'lib_refresh': str_to_bool(os.getenv('refresh', "")),
         'lib_refresh': str_to_bool(os.getenv('REFRESH_LIB', "")),
+        'remove_sync': str_to_bool(os.getenv('CLEAN_SYNC', "")),
         'SERVER_CFG': str_to_bool(os.getenv('SERVER_SETUP', ""))
 
     }
@@ -149,7 +152,7 @@ def update_env_file(key, value):
     root_dir = os.path.dirname(script_dir)
     cfg_file = os.path.join(root_dir, f'server_cfg/server.cfg')
     env_file = cfg_file
-    # Read the existing .env file
+    # Read the existing config.env file
     with open(env_file, 'r') as f:
         lines = f.readlines()
 
@@ -163,7 +166,7 @@ def update_env_file(key, value):
     if not updated:
         lines.append(f"{key}={value}\n")
 
-    # Write the updated .env file
+    # Write the updated config.env file
     with open(env_file, 'w') as f:
         f.writelines(lines)
 
@@ -172,18 +175,19 @@ def torf(move_files=None, live_tv=None, sync_directories=None, UNSORTED=None, SE
          ezpztv_task=None, ezpztv_setup=None, application_version=None, APIKEY=None, apikey_run=None,
          jellyfin_url=None):
     try:
+
         if UNSORTED is True:
             print("Moving unsorted VOD")
-            vars(sync_directories, variables_all, 'master_unsorted', 'local_unsorted')
+            vars(sync_directories, variables_all, 'master_unsorted', 'local_unsorted', 'remove_sync')
         if live_tv is True:
             print("Moving livetv.m3u")
             vars(move_files, variables_all, 'livetv_file', 'live_tv_dir')
         if application_version == "ezpztv" and SERVER_CFG is True:
             print("Running ezpztv start-up task")
-            wait_for_server(17)
+            wait_for_server(12)
             ezpztv_task()
         if application_version == "ezpztv" and SERVER_CFG is False:
-            wait_for_server(17)
+            wait_for_server(21)
             ezpztv_setup()
             update_env_file('SERVER_SETUP', 'True')
         if application_version == "m3uparser" and APIKEY and jellyfin_url:
@@ -192,3 +196,13 @@ def torf(move_files=None, live_tv=None, sync_directories=None, UNSORTED=None, SE
     except Exception as e:
         print(f"An error occurred: {e}")
 
+
+# Debugging for variable values
+jellyfin_variables = variables_all(process_env_variable, str_to_bool, process_env_special, 'remove_sync', 'main_user',
+                                   'jellyfin_url', 'live_tv', 'UNSORTED', 'application_version', 'SERVER_CFG',
+                                   'main_pass', 'log_file', 'script_dir', 'root_dir', 'images_file', 'logo_file',
+                                   'banner_file', 'lib_refresh', 'REMOVE_TERMS')
+jellyfin_url = jellyfin_variables['jellyfin_url']
+live_tv = jellyfin_variables['live_tv']
+if __name__ == "__main__":
+    print(jellyfin_variables)

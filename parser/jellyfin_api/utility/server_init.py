@@ -3,7 +3,7 @@ import time
 import json
 import os
 import shutil
-
+import re
 
 # ================================
 # Initial Server Configuration
@@ -95,8 +95,8 @@ def ping_server(jellyfin_url, max_retries=10, interval=10):
             )
 
             if response.status_code == 200:
-                print("PING was successful...")
-                time.sleep(10)
+                print("PING was successful.")
+                time.sleep(7)
                 return "continue"
 
             else:
@@ -110,6 +110,44 @@ def ping_server(jellyfin_url, max_retries=10, interval=10):
 
     print(f"Failed to ping server after {max_retries} retries.")
     return "stop"
+
+
+# ================================
+# Add repository to server
+# ================================
+
+
+def add_repo(main_client, jellyfin_url):
+
+    try:
+        headers = main_client.jellyfin.get_default_headers()
+        headers.update({
+            "Content-Type": "application/json"
+        })
+        addrepo = [{
+                    "Name": "Jellyfin Official Repository",
+                    "Url": "https://repo.jellyfin.org/files/plugin/manifest.json",
+                    "Enabled": True
+        }]
+
+        # Send POST request to the specified endpoint
+        response = main_client.jellyfin.send_request(
+            jellyfin_url,
+            "/Repositories",
+            method="post",
+            headers=headers,
+            data=json.dumps(addrepo)
+        )
+
+        if response.status_code == 204:
+            print("Repository added successfully.")
+        else:
+            print(f"Failed to add repository. Status Code: {response.status_code},"
+                  f" Response: {response.content}")
+
+    except Exception as e:
+        print(f"Failed to add repository: {e}")
+
 
 
 # ================================
@@ -132,3 +170,47 @@ def copy_png_files(filename, source_dir, destination_dir):
             print(f"Error copying file {filename}: {e}")
     else:
         print(f"File {filename} not found or is not a PNG file in {source_dir}.")
+
+
+# ================================
+# Rebrand web title
+# ================================
+
+
+def rebrand_title(logo_file):
+    try:
+        # Define file paths
+        file1 = f'{logo_file}/main.jellyfin.bundle.js'
+        file2 = f'{logo_file}/index.html'
+        file3 = f'{logo_file}/73233.87c77dce22de92e7c77a.chunk.js'
+
+        # Define replacements
+        replacements = [
+            (file1, [
+                (r'document\.title=s\.Ay\.translateHtml\(document\.title,"core"\)', 'document.title="EZPZTV"')
+            ]),
+            (file2, [
+                (r'<title>Jellyfin</title>', '<title>EZPZTV</title>')
+            ]),
+            (file3, [
+                (r'document\.title="Jellyfin"', 'document.title="EZPZTV"'),
+                (r'document\.title=e\|\|"Jellyfin"', 'document.title=e||"EZPZTV"')
+            ])
+        ]
+
+        for file_path, file_replacements in replacements:
+            try:
+                with open(file_path, 'r+', encoding='utf-8') as f:
+                    content = f.read()
+                    for pattern, replacement in file_replacements:
+                        content = re.sub(pattern, replacement, content)
+                    f.seek(0)
+                    f.write(content)
+                    f.truncate()
+                print(f"File '{file_path}' was edited successfully.")
+            except Exception as e:
+                print(f"Error processing file {file_path}: {e}")
+
+    except Exception as e:
+        print(f"Error rebranding titles: {e}")
+# if __name__ == "__main__":

@@ -1,0 +1,8 @@
+services:
+  m3uparser:
+    container_name: m3uparser
+    image: xaque87/m3uparser:latest
+    env_file: ./m3uparser.env
+    volumes:
+      - /home/path/to/media:/usr/src/app/VODS
+      - /home/path/to/logs:/usr/src/app/logs/

@@ -149,39 +149,6 @@ def add_tuner_host(client, jellyfin_url, live_tv):
     else:
         print(f"Failed to add Tuner Host")
 
-# ====================================
-# Add EPG to Tuners (m3u file or url)
-# ====================================
-
-# def add_epg_xml_single(client):
-#
-#     epg_data = {
-#         "Type": "XMLTV",
-#         "Path": epg_path,
-#         "EnableAllTuners": True
-#     }
-#
-#     headers = client.jellyfin.get_default_headers()
-#     headers.update({
-#         "Content-Type": "application/json"
-#     })
-#
-#     try:
-#         response = client.jellyfin.send_request(
-#             jellyfin_url,
-#             "LiveTv/ListingProviders",
-#             method="post",
-#             headers=headers,
-#             data=json.dumps(epg_data)
-#         )
-#
-#         if response.status_code == 200:
-#             print("EPG XML added successfully.")
-#         else:
-#             print(f"Failed to add EPG XML. Status Code: {response.status_code}, Response: {response.content}")
-#
-#     except Exception as e:
-#         print(f"Failed to add EPG XML: {e}")
 
 # ====================================
 # Add EPG to Tuners (m3u file or url)
@@ -225,6 +192,7 @@ def add_epg_xml(client, epg_path, jellyfin_url, live_tv):
                 print(f"Exception occurred while adding EPG XML for {url}: {e}")
     else:
         print("Live TV is not enabled.")
+
 # ====================================
 # Disable scheduled library refresh
 # ====================================
@@ -257,6 +225,37 @@ def library_refresh_disable(main_client, jellyfin_url):
     except Exception as e:
         print(f"Failed to remove refresh task options: {e}")
 
+
+# ====================================
+# Run Library refresh REFRESH_LIB=true
+# ====================================
+
+
+def run_library_task(main_client, jellyfin_url, lib_refresh):
+    if lib_refresh:
+        try:
+            headers = main_client.jellyfin.get_default_headers()
+            # Send POST request to the specified endpoint
+            response = main_client.jellyfin.send_request(
+                jellyfin_url,
+                "/Library/Refresh",
+                method="post",
+                headers=headers
+            )
+
+            if response.status_code == 204:
+                print("Library refresh task started successfully.")
+            elif response.status_code == 401:
+                print("Library refresh task failed")
+            else:
+                print(f"Failed to start Library refresh task. Status Code: {response.status_code},"
+                      f" Response: {response.content}")
+
+        except Exception as e:
+            print(f"Failed to start Library refresh task: {e}")
+    else:
+        print(f"Library refresh is set to false, set REFRESH_LIB=true in compose file to enable")
+
 # ====================================
 # Run TV guide refresh
 # ====================================
@@ -286,8 +285,42 @@ def run_scheduled_task(main_client, jellyfin_url, live_tv):
     else:
         print("Live TV is not enabled.")
 
+# ====================================
+# Disable scheduled subtitle download task
+# ====================================
+
+
+def sub_dload_disable(main_client, jellyfin_url):
+    task_id = "2c66a88bca43e565d7f8099f825478f1"
+
+    task_data = []
+
+    headers = main_client.jellyfin.get_default_headers()
+    headers.update({
+        "Content-Type": "application/json"
+    })
+
+    try:
+        response = main_client.jellyfin.send_request(
+            jellyfin_url,
+            f"/ScheduledTasks/{task_id}/Triggers",
+            method="post",
+            headers=headers,
+            data=json.dumps(task_data)
+        )
+
+        if response.status_code == 204:
+            print("Download Subtitle task has been removed.")
+        else:
+            print(f"Failed to update task options. Status Code: {response.status_code}, Response: {response.content}")
+
+    except Exception as e:
+        print(f"Failed to remove subtitle task options: {e}")
+
+
+
 # ================================
-# GET schedule task values DEPRICATED
+# GET schedule task values DEPRECATED
 # ================================
 
 # def scheduled_task_values(main_client):
@@ -321,6 +354,41 @@ def run_scheduled_task(main_client, jellyfin_url, live_tv):
 #                 sched_task_lib.get("EndTimeUtc")):
 #
 #                 library_refresh_disable(main_client)
+
+# ====================================
+# Add EPG to Tuners (m3u file or url) - single url, deprecated.
+# ====================================
+
+# def add_epg_xml_single(client):
+#
+#     epg_data = {
+#         "Type": "XMLTV",
+#         "Path": epg_path,
+#         "EnableAllTuners": True
+#     }
+#
+#     headers = client.jellyfin.get_default_headers()
+#     headers.update({
+#         "Content-Type": "application/json"
+#     })
+#
+#     try:
+#         response = client.jellyfin.send_request(
+#             jellyfin_url,
+#             "LiveTv/ListingProviders",
+#             method="post",
+#             headers=headers,
+#             data=json.dumps(epg_data)
+#         )
+#
+#         if response.status_code == 200:
+#             print("EPG XML added successfully.")
+#         else:
+#             print(f"Failed to add EPG XML. Status Code: {response.status_code}, Response: {response.content}")
+#
+#     except Exception as e:
+#         print(f"Failed to add EPG XML: {e}")
+
 #
 #     except Exception as e:
 #         print(f"An error occurred: {e}")

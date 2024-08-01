@@ -2,11 +2,12 @@ import os
 
 
 def dirmake(server_cfg, cfg_file, logs, m3u_dir, livetv_file, live_tv_dir, tv_dir, movies_dir,
-            unsorted_dir, log_file, branding_file):
+            unsorted_dir, log_file, branding_file, local_tv_dir, local_mov_dir, local_unsorted):
     try:
 
         # Create directories if they don't exist
-        for directory in [m3u_dir, live_tv_dir, logs, server_cfg, unsorted_dir, tv_dir, movies_dir, branding_file]:
+        for directory in [m3u_dir, live_tv_dir, logs, server_cfg, unsorted_dir, tv_dir, movies_dir, branding_file,
+                          local_tv_dir, local_mov_dir, local_unsorted]:
             if not os.path.exists(directory):
                 os.makedirs(directory)
 
