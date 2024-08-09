@@ -1,6 +1,8 @@
 from jellyfin_apiclient_python import JellyfinClient
-import os
 import json
+import os
+
+
 # def api_client_auth(jellyfin_url, api_key):
 #     try:
 #         apikey_ezpztv = JellyfinClient()
@@ -134,8 +136,8 @@ def api_upload_log(file_path, api_key, jellyfin_url, rerun):
     except Exception as e:
         print(f"Failed to add LOG: {e}")
 
-def add_repo_api(api_key, jellyfin_url):
 
+def add_repo_api(api_key, jellyfin_url):
     # Use api-key method to get default headers
     apikey_ezpztv = JellyfinClient()
     apikey_ezpztv.config.app('EZPZTV', '21.12', 'device', '123456')
@@ -150,9 +152,9 @@ def add_repo_api(api_key, jellyfin_url):
             "Content-Type": "application/json"
         })
         addrepo = [{
-                    "Name": "Jellyfin Official Repository",
-                    "Url": "https://repo.jellyfin.org/files/plugin/manifest.json",
-                    "Enabled": True
+            "Name": "Jellyfin Official Repository",
+            "Url": "https://repo.jellyfin.org/files/plugin/manifest.json",
+            "Enabled": True
         }]
 
         # Send POST request to the specified endpoint
@@ -175,5 +177,5 @@ def add_repo_api(api_key, jellyfin_url):
     except Exception as e:
         print(f"Failed to add repository: {e}")
 
+
 # if __name__ == "__main__":
-# #     run_guide_task()
