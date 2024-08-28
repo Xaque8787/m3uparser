@@ -1,7 +1,7 @@
 services:
   ezpztv:
     container_name: ezpztv
-    image: xaque87/ezpztv:latest
+    image: xaque87/ezpztv:threadfin
     env_file:
       - ./ezpztv.env
     volumes:
