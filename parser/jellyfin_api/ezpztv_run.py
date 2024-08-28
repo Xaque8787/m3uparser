@@ -10,7 +10,7 @@ def ezpztv_task():
         value = vars(ping_server, variables_all, 'jellyfin_url', max_retries=8, interval=7)
         if value == "continue":
             main_client = vars(client_main_user, variables_all, 'jellyfin_url', 'main_user', 'main_pass')
-            vars(run_scheduled_task, variables_all, main_client, 'jellyfin_url', 'live_tv')
+            vars(run_scheduled_task, variables_all, main_client, 'jellyfin_url', 'live_tv', 'application_version')
             vars(run_library_task, variables_all, main_client, 'jellyfin_url', 'lib_refresh')
             vars(upload_log, variables_all, main_client, 'log_file', 'jellyfin_url', 'HOURS')
         else:

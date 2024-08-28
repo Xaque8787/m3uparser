@@ -39,7 +39,7 @@ services:
         ipv4_address: 10.21.12.7
       default:
 
-  Jellyfin:
+  ezpztv_server:
     image: lscr.io/linuxserver/jellyfin:latest
     container_name: Jellyfin
     environment:
@@ -97,13 +97,20 @@ volumes:
 
 ## Instalation Process
 
-Copy the above compose file into a docker-compose.yaml file and run `docker compose up -d`
+```
+mkdir ezpztv
+cd ezpztv
+curl -o docker-compose.yaml https://raw.githubusercontent.com/Xaque8787/m3uparser/ezpztv/ezpztv/docker-compose.yaml
+curl -o ezpztv.env https://raw.githubusercontent.com/Xaque8787/m3uparser/ezpztv/ezpztv/ezpztv.env
+```
 
-**OR**
+Then edit the ezpztv.env file with your credentials and desired values.
 
-Copy the files from the m3uparser directory in the repo and fill out the ezpztv.env file then run `docker compose up -d`
+Then run:
 
-You can either copy the contents of the files manually, clone this repo with git, or download the repo as a zip and extract it.
+```
+docker compose up -d
+```
 
 ## Basic m3u Parsing Information
 
@@ -180,6 +187,12 @@ If you encounter issues, run `docker compose down -v` and restart the container.
 ```
 docker exec -it ezpztv /bin/bash
 cat "/usr/src/app/logs/log_file.log"
+```
+
+For active monitoring of logs run:
+
+```
+docker exec -it ezpztv /bin/bash -c "tail -f ./logs/log_file.log"
 ```
 
 For real-time monitoring issues, increase the inotify watch limit on your host machine:

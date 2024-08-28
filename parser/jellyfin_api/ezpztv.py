@@ -18,9 +18,11 @@ def ezpztv_setup():
 
         vars(library_options, variables_all, client, 'jellyfin_url')
 
-        vars(add_tuner_host, variables_all, client, 'jellyfin_url', 'live_tv')
+        vars(add_tuner_host, variables_all, client, 'jellyfin_url', 'live_tv', 'application_version',
+             'host', 'port', 'main_user', 'main_pass')
 
-        vars(add_epg_xml, variables_all, client, 'epg_path', 'jellyfin_url', 'live_tv')
+        vars(add_epg_xml, variables_all, client, 'epg_path', 'jellyfin_url', 'live_tv', 'application_version',
+             'host', 'port', 'main_user', 'main_pass')
         
         vars(create_main_user, variables_all, client, 'jellyfin_url', 'main_user', 'main_pass')
         
@@ -48,6 +50,8 @@ def ezpztv_setup():
         vars(copy_png_files, variables_all, 'favicon.png', 'images_file', 'logo_file')
         vars(copy_png_files, variables_all, 'baba78f2a106d9baee83.png', 'images_file', 'logo_file')
         vars(copy_png_files, variables_all, 'bc8d51405ec040305a87.ico', 'images_file', 'logo_file')
+        vars(copy_threadfin_files, variables_all, 'config.json', 'images_file', 'logo_file',
+             'application_version')
 
         vars(upload_log, variables_all, main_client, 'log_file', 'jellyfin_url', 'HOURS')
 

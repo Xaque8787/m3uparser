@@ -96,6 +96,17 @@ def ping_server(jellyfin_url, max_retries=10, interval=10):
 
             if response.status_code == 200:
                 print("PING was successful.")
+                try_serv = requests.get(
+                    jellyfin_url,
+                    "System/Info/Public"
+                )
+                if try_serv.status_code == 200:
+                    print("Server available.")
+                    date_header = try_serv.headers.get('Date')
+                    if date_header:
+                        print(f"Date: {date_header}")
+                    else:
+                        print("Date header not found.")
                 time.sleep(7)
                 return "continue"
 
@@ -161,7 +172,7 @@ def copy_png_files(filename, source_dir, destination_dir):
     destination_path = os.path.join(destination_dir, filename)
 
     # Check if the source file exists
-    if os.path.exists(source_path) and source_path.endswith(('.png', '.ico')):
+    if os.path.exists(source_path) and source_path.endswith(('.png', '.ico', '.json')):
         try:
             # noinspection PyTypeChecker
             shutil.copy2(source_path, destination_path)
@@ -172,6 +183,27 @@ def copy_png_files(filename, source_dir, destination_dir):
         print(f"File {filename} not found or is not a PNG file in {source_dir}.")
 
 
+def copy_threadfin_files(filename, source_dir, destination_dir, application_version):
+    if application_version == "threadfin":
+        try:
+            # Construct full file paths
+            source_path = os.path.join(source_dir, filename)
+            destination_path = os.path.join(destination_dir, filename)
+
+            # Check if the source file exists
+            if os.path.exists(source_path) and source_path.endswith(('.png', '.ico', '.json')):
+                try:
+                    # noinspection PyTypeChecker
+                    shutil.copy2(source_path, destination_path)
+                    print(f"File {filename} copied successfully to {destination_dir}.")
+                except Exception as e:
+                    print(f"Error copying file {filename}: {e}")
+            else:
+                print(f"File {filename} not found or is not a PNG file in {source_dir}.")
+        except Exception as e:
+            print(f"Error copying file {filename}: {e}")
+    else:
+        print(f"Application Version is not Threadfin, skipping adding menu item")
 # ================================
 # Rebrand web title
 # ================================
