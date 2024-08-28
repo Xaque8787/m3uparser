@@ -1,6 +1,6 @@
 ![EZPZTV](./parser/assets/banner-light.png)
 
-# EZPZTV + m3u|>arser
+# EZPZTV + m3u|>arser + Threadfin
 
 EZPZTV automates the Jellyfin server configuration, while m3u|>arser will parse your m3u urls and make a .strm library for the media server. Fill out the options in the compose file, run the container stack, and everything will be configured and ready to go.
 
@@ -10,7 +10,7 @@ Docker Compose Example
 services:
   EZPZTV:
     container_name: ezpztv
-    image: xaque87/ezpztv:latest
+    image: xaque87/ezpztv:threadfin
     environment:
       - PUID=1000 # Defaults 1000 if blank.
       - PGID=1000 # Defaults 1000 if blank.
@@ -25,8 +25,8 @@ services:
       - EPG_URL="https://epg_url.com, https://epg2_url.com, etc..."
       - UNSORTED= # Default is false if blank, true will put Unsorted_VOD at same path as the other VOD folders.
       - REFRESH_LIB= # Default is false if blank. Will refresh libraries after each parsing.
-      - USER_NAME=Choose_Username # Username that will be used to log into the server.
-      - PASSWORD=Choose_Password # Password that will be used to log into the server.
+      - USER_NAME=Choose_Username # Username that will be used to log into the server/threadfin.
+      - PASSWORD=Choose_Password # Password that will be used to log into the server/threadfin.
 
     volumes:
       - movie_vod_volume:/usr/src/app/VODS/Movie_VOD/
@@ -64,6 +64,24 @@ services:
       default:
     restart: unless-stopped
 
+threadfin:
+    image: fyb3roptik/threadfin:latest
+    container_name: ezpztv_threadfin
+    ports:
+      - 34400:34400
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Los_Angeles
+    volumes:
+      - live_tv:/home/threadfin/conf/data
+      - tmp:/tmp/threadfin:rw
+      - server_cfg_volume:/home/threadfin/conf
+    networks:
+      ezpznet:
+        ipv4_address: 10.21.12.9    
+    restart: unless-stopped
+
 networks:
   ezpznet:
     ipam:
@@ -72,12 +90,14 @@ networks:
         - subnet: "10.21.12.0/28"
 
 volumes:
+  logo:
   server_cfg_volume:
   live_tv:
   movie_vod_volume:
   tv_vod_volume:
   config_volume:
-  branding:
+  branding:
+  tmp:
 ```
 
 | ENV VARIABLE  | VALUES                                              | DESCRIPTION                                                                                                   | EXAMPLE                                      | DEFAULT VALUES                     |
@@ -92,18 +112,25 @@ volumes:
 | CLEAN_SYNC    | true/false                                          | Will remove titles from VOD folders that are not present in m3u.                                              | false                                        | false                              |
 | LIVE_TV       | true/false                                          | Parse live tv streams in m3u urls and creates a single livetv.m3u                                             | true/false                                   | false                              |
 | UNSORTED      | true/false                                          | Creates a VOD folder for undefined streams, either misspelled or poorly labeled streams                       | true/false                                   | false                              |
-| USER_NAME     | Pick-a-Username                                     | Choose a username for the admin user of the server                                                            | majordude                                    | n/a                                |
-| PASSWORD      | Pick-a-Password                                     | Choose a password for the admin user of the server                                                            | some_password                                | n/a                                |
+| USER_NAME     | Pick-a-Username                                     | Choose a username for the admin user of the server/Threadfin                                                  | majordude                                    | n/a                                |
+| PASSWORD      | Pick-a-Password                                     | Choose a password for the admin user of the server/Threadfin                                                  | some_password                                | n/a                                |
 
 ## Instalation Process
 
-Copy the above compose file into a docker-compose.yaml file and run `docker compose up -d`
+```
+mkdir ezpztv
+cd ezpztv
+curl -o docker-compose.yaml https://raw.githubusercontent.com/Xaque8787/m3uparser/ezpztv_thread/ezpztv_thread/docker-compose.yaml
+curl -o ezpztv.env https://raw.githubusercontent.com/Xaque8787/m3uparser/ezpztv_thread/ezpztv_thread/ezpztv.env
+```
 
-**OR**
+Then edit the ezpztv.env file with your credentials and desired values.
 
-Copy the files from the m3uparser directory in the repo and fill out the ezpztv.env file then run `docker compose up -d`
+Then run:
 
-You can either copy the contents of the files manually, clone this repo with git, or download the repo as a zip and extract it.
+```
+docker compose up -d
+```
 
 ## Basic m3u Parsing Information
 
@@ -180,6 +207,12 @@ If you encounter issues, run `docker compose down -v` and restart the container.
 ```
 docker exec -it ezpztv /bin/bash
 cat "/usr/src/app/logs/log_file.log"
+```
+
+For active monitoring of logs run:
+
+```
+docker exec -it ezpztv /bin/bash -c "tail -f ./logs/log_file.log"
 ```
 
 For real-time monitoring issues, increase the inotify watch limit on your host machine:

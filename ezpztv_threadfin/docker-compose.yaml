@@ -1,0 +1,74 @@
+services:
+  ezpztv:
+    container_name: ezpztv
+    image: xaque87/ezpztv:latest
+    env_file:
+      - ./ezpztv.env
+    volumes:
+      - server_cfg_volume:/usr/src/app/server_cfg/
+      - movie_vod_volume:/usr/src/app/VODS/Movie_VOD/
+      - tv_vod_volume:/usr/src/app/VODS/TV_VOD/
+      - live_tv:/usr/src/app/VODS/Live_TV/
+      - branding:/usr/src/app/branding
+    networks:
+      ezpznet:
+        ipv4_address: 10.21.12.7
+      default:
+
+  ezpztv_jellyfin:
+    image: lscr.io/linuxserver/jellyfin:latest
+    container_name: ezpztv_server
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      # - JELLYFIN_PublishedServerUrl=
+    volumes:
+      - config_volume:/config
+      - tv_vod_volume:/data/tvshows
+      - movie_vod_volume:/data/movies
+      - live_tv:/data
+      - branding:/usr/share/jellyfin/
+    ports:
+      - 8096:8096
+      - 8920:8920
+    networks:
+      ezpznet:
+        ipv4_address: 10.21.12.8
+      default:
+    restart: unless-stopped
+
+threadfin:
+    image: fyb3roptik/threadfin:latest
+    container_name: ezpztv_threadfin
+    ports:
+      - 34400:34400
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Los_Angeles
+    volumes:
+      - live_tv:/home/threadfin/conf/data
+      - tmp:/tmp/threadfin:rw
+      - server_cfg_volume:/home/threadfin/conf
+    networks:
+      ezpznet:
+        ipv4_address: 10.21.12.9    
+    restart: unless-stopped
+
+networks:
+  ezpznet:
+    ipam:
+      driver: default
+      config:
+        - subnet: "10.21.12.0/28"
+
+volumes:
+  logo:
+  server_cfg_volume:
+  live_tv:
+  movie_vod_volume:
+  tv_vod_volume:
+  config_volume:
+  branding:
+  tmp:

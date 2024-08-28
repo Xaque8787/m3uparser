@@ -1,7 +1,6 @@
 import os
 from dotenv import load_dotenv
 
-
 # Process functions for environment variables
 def process_env_variable(env_var_value):
     if isinstance(env_var_value, str):
@@ -94,9 +93,16 @@ def variables_all(process_env_variable, str_to_bool, process_env_special, *args)
         'server_name': os.getenv('SERVER_NAME', ""),
         'live_tv': str_to_bool(os.getenv('LIVE_TV', "")),
         'APIKEY': os.getenv('API_KEY', ""),
+        'thread_user': os.getenv('TF_USER', ""),
+        'thread_pass': os.getenv('TF_PASS', ""),
+        'thread_url': os.getenv('TF_URL', ""),
+        'host': os.getenv('TF_HOST', ""),
+        'port': os.getenv('TF_PORT', ""),
         'application_version': os.getenv('APP_VERSION', ""),
         'lib_refresh': str_to_bool(os.getenv('REFRESH_LIB', "")),
         'remove_sync': str_to_bool(os.getenv('CLEAN_SYNC', "")),
+        'url_m3u': os.getenv('M3U_URL', ""),
+        'epg_xml': os.getenv('EPG_URL', ""),
         'SERVER_CFG': str_to_bool(os.getenv('SERVER_SETUP', ""))
 
     }
@@ -147,6 +153,7 @@ def vars(func, vars_func, *args, **extra_kwargs):
     return result
 
 
+
 def update_env_file(key, value):
     script_dir = os.path.dirname(os.path.dirname(__file__))
     root_dir = os.path.dirname(script_dir)
@@ -173,7 +180,8 @@ def update_env_file(key, value):
 
 def torf(move_files=None, live_tv=None, sync_directories=None, UNSORTED=None, SERVER_CFG=None, wait_for_server=None,
          ezpztv_task=None, ezpztv_setup=None, application_version=None, APIKEY=None, apikey_run=None,
-         jellyfin_url=None):
+         jellyfin_url=None, thread_user=None, thread_pass=None, thread_url=None, tf_update=None,
+         run_websocket_operations=None, run_reload_operations=None):
     try:
 
         if UNSORTED is True:
@@ -182,27 +190,43 @@ def torf(move_files=None, live_tv=None, sync_directories=None, UNSORTED=None, SE
         if live_tv is True:
             print("Moving livetv.m3u")
             vars(move_files, variables_all, 'livetv_file', 'live_tv_dir')
-        if application_version == "ezpztv" and SERVER_CFG is True:
+        if application_version in ["ezpztv", "threadfin"] and SERVER_CFG is True:
+            wait_for_server(15)
+            if application_version == "threadfin":
+                print("Running Threadfin m3u/epg update")
+                run_reload_operations()
             print("Running ezpztv start-up task")
-            wait_for_server(12)
+            wait_for_server(15)
             ezpztv_task()
-        if application_version == "ezpztv" and SERVER_CFG is False:
+        if application_version in ["ezpztv", "threadfin"] and SERVER_CFG is False:
             wait_for_server(21)
+            if application_version == "threadfin":
+                print("Running Threadfin set-up and m3u/epg update")
+                run_websocket_operations()
+                run_reload_operations()
             ezpztv_setup()
             update_env_file('SERVER_SETUP', 'True')
         if application_version == "m3uparser" and APIKEY and jellyfin_url:
+            if application_version == "threadfin":
+                print("Running Threadfin m3u/epg update")
+                run_reload_operations()
             print("Running ezpztv api start-up task")
             apikey_run()
+        if application_version == "m3uparser" and thread_user and thread_pass:
+            print("Running Threadfin m3u update")
+            tf_update(thread_user, thread_pass, thread_url)
     except Exception as e:
         print(f"An error occurred: {e}")
 
 
 # Debugging for variable values
-jellyfin_variables = variables_all(process_env_variable, str_to_bool, process_env_special, 'remove_sync', 'main_user',
-                                   'jellyfin_url', 'live_tv', 'UNSORTED', 'application_version', 'SERVER_CFG',
-                                   'main_pass', 'log_file', 'script_dir', 'root_dir', 'images_file', 'logo_file',
-                                   'banner_file', 'lib_refresh', 'REMOVE_TERMS')
-jellyfin_url = jellyfin_variables['jellyfin_url']
-live_tv = jellyfin_variables['live_tv']
-if __name__ == "__main__":
-    print(jellyfin_variables)
+# jellyfin_variables = variables_all(process_env_variable, str_to_bool, process_env_special, 'host', 'port', 'epg_path',
+#                                    'thread_url', 'm3u_file_path', 'remove_sync', 'main_user',
+#                                    'jellyfin_url', 'live_tv', 'UNSORTED', 'application_version', 'SERVER_CFG',
+#                                    'main_pass', 'log_file', 'script_dir', 'root_dir', 'REMOVE_TERMS', 'live_tv_dir',
+#                                    'livetv_file')
+# jellyfin_url = jellyfin_variables['jellyfin_url']
+# live_tv = f'{jellyfin_variables['port']}:{jellyfin_variables['host']}/{jellyfin_variables['live_tv_dir']}'
+# if __name__ == "__main__":
+#     print(jellyfin_variables)
+#     print(live_tv)

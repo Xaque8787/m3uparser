@@ -83,6 +83,37 @@ def clean_group_title(entry, REMOVE_TERMS, REMOVE_DEFAULTS):
         if 'movie' not in entry and 'tv_show' not in entry and 'duration' in entry and entry['duration'] == '-1':
             entry['livetv'] = True
 
+            # Check if 'tvg-id' exists in the entry
+            if 'tvg-id' in entry:
+                tvg_id = entry['tvg-id']
+
+                # Check if 'tvg-id' is empty/null
+                if not tvg_id:
+                    # Create new tvg-id from 'tvg-name' and last 3 characters of 'stream_url'
+                    tvg_name = entry.get('tvg-name', '')
+                    # stream_url = entry.get('stream_url', '')
+
+                    # Replace spaces and colons in 'tvg-name' with periods
+                    derived_tvg_id = (
+                        tvg_name.replace(' ', '.')
+                        .replace(':', '.')
+                        .replace('(', '.')
+                        .replace(')', ".")
+                        .replace('..', ".")
+                        .strip('.')
+                    )
+
+                    # Append the last 3 characters of 'stream_url' with a period
+                    # if len(stream_url) >= 3:
+                    #     derived_tvg_id += f"{stream_url[-3:]}"
+
+                    # Update 'tvg-id' in the entry
+                    entry['tvg-id'] = derived_tvg_id
+
+                    # Update 'extinf_line' to replace the null tvg-id with the new value
+                    extinf_line = entry.get('extinf_line', '')
+                    updated_extinf_line = re.sub(r'tvg-id="[^"]*"', f'tvg-id="{derived_tvg_id}"', extinf_line)
+                    entry['extinf_line'] = updated_extinf_line
         # Set entry of 'unsorted'
         if 'movie' not in entry and 'tv_show' not in entry and 'livetv' not in entry:
             entry['unsorted'] = True

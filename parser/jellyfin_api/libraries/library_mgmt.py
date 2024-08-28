@@ -1,5 +1,5 @@
 import json
-
+from parser.threadfin import run_reload_operations
 # ================================
 # Add TV and Movie libraries
 # ================================
@@ -109,54 +109,99 @@ def library_options_post(library_id, main_client, jellyfin_url):
 # ================================
 
 
-def add_tuner_host(client, jellyfin_url, live_tv):
-    if live_tv:
-        tuner_host_data = {
-            "Id": "211290125",
-            "Url": "/data/livetv.m3u",
-            "Type": "M3U",
-            "FriendlyName": "LiveTV",
-            "ImportFavoritesOnly": False,
-            "AllowHWTranscoding": True,
-            "EnableStreamLooping": False,
-            "Source": "File",
-            "TunerCount": 1,
-            "UserAgent": "your-user-agent",
-            "IgnoreDts": True
-        }
-
-        headers = client.jellyfin.get_default_headers()
-        headers.update({
-            "Content-Type": "application/json"
-        })
-
+def add_tuner_host(client, jellyfin_url, live_tv, application_version,
+                   host=None, port=None, main_user=None, main_pass=None):
+    if live_tv and application_version == "ezpztv":
         try:
-            response = client.jellyfin.send_request(
-                jellyfin_url,
-                "LiveTv/TunerHosts",
-                method="post",
-                headers=headers,
-                data=json.dumps(tuner_host_data)
-            )
+            print("Adding tuner for ezpztv application")
+            tuner_host_data = {
+                "Id": "211290125",
+                "Url": "/data/livetv.m3u",
+                "Type": "m3u",
+                "FriendlyName": "LiveTV",
+                "ImportFavoritesOnly": False,
+                "AllowHWTranscoding": True,
+                "EnableStreamLooping": False,
+                "Source": "File",
+                "TunerCount": 1,
+                "UserAgent": "your-user-agent",
+                "IgnoreDts": True
+            }
 
-            if response.status_code == 200:
-                print("Tuner Host added successfully.")
-            else:
-                print(f"Failed to add Tuner Host. Status Code: {response.status_code}, Response: {response.content}")
+            headers = client.jellyfin.get_default_headers()
+            headers.update({
+                "Content-Type": "application/json"
+            })
 
+            try:
+                response = client.jellyfin.send_request(
+                    jellyfin_url,
+                    "LiveTv/TunerHosts",
+                    method="post",
+                    headers=headers,
+                    data=json.dumps(tuner_host_data)
+                )
+
+                if response.status_code == 200:
+                    print("Tuner Host added successfully.")
+                else:
+                    print(f"Failed to add Tuner Host. Status Code: {response.status_code}, Response: {response.content}")
+            except Exception as e:
+                print(f"Failed to add Tuner Host: {e}")
         except Exception as e:
-            print(f"Failed to add Tuner Host: {e}")
+            print(f"Failed to add Tuner Host payload info: {e}")
     else:
-        print(f"Failed to add Tuner Host")
+        print(f"Failed to add Tuner Host, live_tv is false or application_version is not ezpztv")
+    if application_version == "threadfin":
+        try:
+            print("Running Threadfin add tuner host")
+            tuner_host_data = {
+                "Id": "211290125",
+                "Url": f"http://{host}:{port}/m3u/threadfin.m3u?username={main_user}&password={main_pass}",
+                "Type": "m3u",
+                "FriendlyName": "LiveTV",
+                "ImportFavoritesOnly": False,
+                "AllowHWTranscoding": True,
+                "EnableStreamLooping": False,
+                "Source": "File",
+                "TunerCount": 1,
+                "UserAgent": "your-user-agent",
+                "IgnoreDts": True
+            }
 
+            headers = client.jellyfin.get_default_headers()
+            headers.update({
+                "Content-Type": "application/json"
+            })
 
+            try:
+                response = client.jellyfin.send_request(
+                    jellyfin_url,
+                    "LiveTv/TunerHosts",
+                    method="post",
+                    headers=headers,
+                    data=json.dumps(tuner_host_data)
+                )
+
+                if response.status_code == 200:
+                    print("Tuner Host added successfully.")
+                else:
+                    print(f"Failed to add Tuner Host. Status Code: {response.status_code}, Response: {response.content}")
+
+            except Exception as e:
+                print(f"Failed to add Threadfin Tuner: {e}")
+        except Exception as e:
+            print(f"Failed to add Threadfin m3u tuner payload info: {e}")
+    else:
+        print(f"Failed to add Threadfin as Tuner Host")
 # ====================================
 # Add EPG to Tuners (m3u file or url)
 # ====================================
 
 
-def add_epg_xml(client, epg_path, jellyfin_url, live_tv):
-    if live_tv:
+def add_epg_xml(client, epg_path, jellyfin_url, live_tv, application_version,
+                host=None, port=None, main_user=None, main_pass=None):
+    if live_tv and application_version == "ezpztv":
         # Ensure epg_path is a list, even if it's a single URL
         if isinstance(epg_path, str):
             epg_urls = [epg_path]
@@ -191,7 +236,41 @@ def add_epg_xml(client, epg_path, jellyfin_url, live_tv):
             except Exception as e:
                 print(f"Exception occurred while adding EPG XML for {url}: {e}")
     else:
-        print("Live TV is not enabled.")
+        print("Live TV is not enabled or app version is not ezpztv")
+
+    if application_version == "threadfin":
+        print("Application version threadfin, adding xml epg data")
+        try:
+            headers = client.jellyfin.get_default_headers()
+            headers.update({
+                "Content-Type": "application/json"
+            })
+
+            epg_data = {
+                "Type": "XMLTV",
+                "Path": f"http://{host}:{port}/xmltv/threadfin.xml?username={main_user}&password={main_pass}",
+                "EnableAllTuners": True
+            }
+
+            try:
+                response = client.jellyfin.send_request(
+                    jellyfin_url,
+                    "LiveTv/ListingProviders",
+                    method="post",
+                    headers=headers,
+                    data=json.dumps(epg_data)
+                )
+
+                if response.status_code == 200:
+                    print(f"EPG XML for Threadfin added successfully.")
+                else:
+                    print(f"Failed to add EPG XML for Threadfin url. Status Code: {response.status_code}")
+            except Exception as e:
+                print(f"Exception occurred while adding EPG XML for Threadfin, {e}")
+        except Exception as e:
+            print("Failed to add Threadfin EPG url")
+    else:
+        print("Failed to add EPG XML for Threadfin url.")
 
 # ====================================
 # Disable scheduled library refresh
@@ -261,10 +340,10 @@ def run_library_task(main_client, jellyfin_url, lib_refresh):
 # ====================================
 
 
-def run_scheduled_task(main_client, jellyfin_url, live_tv):
+def run_scheduled_task(main_client, jellyfin_url, live_tv, application_version):
     # Use built-in method to get default headers
     headers = main_client.jellyfin.get_default_headers()
-    if live_tv:
+    if live_tv and application_version == "ezpztv":
         try:
             # Send POST request to the specified endpoint
             response = main_client.jellyfin.send_request(
@@ -275,7 +354,7 @@ def run_scheduled_task(main_client, jellyfin_url, live_tv):
             )
 
             if response.status_code == 204:
-                print("Scheduled task started successfully.")
+                print("Scheduled guide task started successfully.")
             else:
                 print(f"Failed to start scheduled task. Status Code: {response.status_code},"
                       f" Response: {response.content}")
@@ -285,6 +364,22 @@ def run_scheduled_task(main_client, jellyfin_url, live_tv):
     else:
         print("Live TV is not enabled.")
 
+    if application_version == "threadfin":
+        try:
+            print("Running Threadfin m3u/epg refresh")
+            run_reload_operations()
+            run_library_task(main_client, jellyfin_url, lib_refresh=True)
+            response = main_client.jellyfin.send_request(
+                jellyfin_url,
+                "ScheduledTasks/Running/bea9b218c97bbf98c5dc1303bdb9a0ca",
+                method="post",
+                headers=headers
+            )
+
+            if response.status_code == 204:
+                print("Scheduled guide refresh task started successfully.")
+        except Exception as e:
+            print(f"Failed to start Threadfin m3u/epg refresh: {e}")
 # ====================================
 # Disable scheduled subtitle download task
 # ====================================
