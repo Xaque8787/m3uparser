@@ -2,6 +2,7 @@ from processors import *
 from utils import *
 from config import *
 from jellyfin_api import *
+from threadfin import *
 
 
 def main():
@@ -42,8 +43,10 @@ def main():
         final_output(errors, livetv_channels_count, movie_strm_count, tv_strm_count, unsorted_strm_count)
         # Run Jellyfin server set-up and/or ezpztv_task
         vars(torf, variables_all, SERVER_CFG='SERVER_CFG', wait_for_server=wait_for_server,  ezpztv_task=ezpztv_task,
-             ezpztv_setup=ezpztv_setup, application_version='application_version', APIKEY='APIKEY',
-             jellyfin_url='jellyfin_url', apikey_run=apikey_run)
+             ezpztv_setup=ezpztv_setup, application_version='application_version', APIKEY='APIKEY', tf_update=tf_update,
+             jellyfin_url='jellyfin_url', thread_user='thread_user', thread_pass='thread_pass', thread_url='thread_url',
+             apikey_run=apikey_run, run_websocket_operations=run_websocket_operations,
+             run_reload_operations=run_reload_operations)
         # Wait interval time to re-run script
         vars(run_timer, variables_all, main, 'HOURS')
 

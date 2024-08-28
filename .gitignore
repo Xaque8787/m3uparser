@@ -2,3 +2,4 @@
 **/*.pyc
 **/*.pyo
 **/*.env
+!m3uparser/m3uparser.env

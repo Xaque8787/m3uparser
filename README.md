@@ -25,6 +25,10 @@ services:
       - UNSORTED= # Default is false, true will put at /VODS/Unsorted_VOD
       - JELLYFIN_URL= # Requires a Jellyfin server to be running. http://<jfin_url:8096>
       - API_KEY= # Generate API key on server and enter it here. Requires a Jellyfin server to be running.
+      -TF_HOST= # IP address used for Threadfin, example 127.0.0.1
+      -TF_PORT= # Port used for Threadfin, example 34400
+      -TF_USER= # Username being used for Threadfin
+      -TF_PASS= # Password for Threadfin
       - REFRESH_LIB= # Requires a Jellyfin server to be running. Will refresh libraries after each parsing.
 
     volumes:
@@ -47,13 +51,20 @@ services:
 
 ## Instalation Process
 
-Copy the above compose file into a docker-compose.yaml file, edit env variables and volume paths, and run `docker compose up -d`
+```
+mkdir m3uparser
+cd m3uparser
+curl -o docker-compose.yaml https://raw.githubusercontent.com/Xaque8787/m3uparser/main/m3uparser/docker-compose.yaml
+curl -o ezpztv.env https://raw.githubusercontent.com/Xaque8787/m3uparser/main/m3uparser/m3uparser.env
+```
 
-**OR**
+Then edit the m3uparser.env file with your credentials and desired values.
 
-Copy the files from the m3uparser directory in the repo and fill out the m3uparser.env file and edit volume paths in teh docker-compose.yaml, then run `docker compose up -d`
+Then run:
 
-You can either copy the contents of the files manually, clone this repo with git, or download the repo as a zip and extract it.
+```
+docker compose up -d
+```
 
 ## Basic Information
 
@@ -107,6 +118,10 @@ Logs will now be uploaded to the server as well.
 **`REFRESH_LIB`** True or false, depending on your preference.
 
 If you do not have a Jellyfin server set up, but would like a easy way to get one set up, checkout the branch of this repo for an automated setup https://github.com/Xaque8787/m3uparser/tree/ezpztv
+
+### THREADFIN INTEGRATION;   TF_HOST, TF_PORT, TF_USER, TF_PASS
+
+If you have Threadfin setup and want to refresh the m3u/xmltv data when the script is run/re run, then supply the ip:port username and password to the appropriate env variables.
 
 ### CLEAN_SYNC
 
