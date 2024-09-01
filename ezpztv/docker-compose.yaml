@@ -10,6 +10,9 @@ services:
       - tv_vod_volume:/usr/src/app/VODS/TV_VOD/
       - live_tv:/usr/src/app/VODS/Live_TV/
       - branding:/usr/src/app/branding
+    # Un comment port section and ensure APK=true in .env to allow android tv apk installation.
+    #ports:
+      #- 2112:2112
     networks:
       ezpznet:
         ipv4_address: 10.21.12.7

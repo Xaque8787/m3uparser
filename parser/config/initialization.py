@@ -24,7 +24,8 @@ def dirmake(server_cfg, cfg_file, logs, m3u_dir, livetv_file, live_tv_dir, tv_di
 
         if not os.path.exists(cfg_file):
             with open(cfg_file, "w", encoding="utf-8") as f:
-                f.write("SERVER_SETUP=False")
+                f.write("SERVER_SETUP=False\n")
+                f.write("APK_DLOAD=False\n")
 
         if not os.path.exists(log_file):
             with open(log_file, "w", encoding="utf-8") as f:

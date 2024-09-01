@@ -3,6 +3,7 @@ from utils import *
 from config import *
 from jellyfin_api import *
 from threadfin import *
+from server_apk import *
 
 
 def main():
@@ -46,7 +47,8 @@ def main():
              ezpztv_setup=ezpztv_setup, application_version='application_version', APIKEY='APIKEY', tf_update=tf_update,
              jellyfin_url='jellyfin_url', thread_user='thread_user', thread_pass='thread_pass', thread_url='thread_url',
              apikey_run=apikey_run, run_websocket_operations=run_websocket_operations,
-             run_reload_operations=run_reload_operations)
+             run_reload_operations=run_reload_operations, apk_server='apk_server',
+             start_server=start_server, APK_DLOAD='APK_DLOAD')
         # Wait interval time to re-run script
         vars(run_timer, variables_all, main, 'HOURS')
 

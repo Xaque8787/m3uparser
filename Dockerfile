@@ -32,8 +32,9 @@ ENV TF_PORT=34400
 ENV TF_USER=
 ENV TF_PASS=
 ENV TF_URL=
+EXPOSE 2112
 
-RUN chmod +x entrypoint.sh && chmod +x /usr/src/app/parser/parser_script.py
+RUN chmod +x entrypoint.sh && chmod +x /usr/src/app/parser/parser_script.py && chmod +x /usr/src/app/parser/server_apk/apk.py
 
 
 

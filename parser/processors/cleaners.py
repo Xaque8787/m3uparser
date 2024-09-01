@@ -91,7 +91,7 @@ def clean_group_title(entry, REMOVE_TERMS, REMOVE_DEFAULTS):
                 if not tvg_id:
                     # Create new tvg-id from 'tvg-name' and last 3 characters of 'stream_url'
                     tvg_name = entry.get('tvg-name', '')
-                    # stream_url = entry.get('stream_url', '')
+                    stream_url = entry.get('stream_url', '')
 
                     # Replace spaces and colons in 'tvg-name' with periods
                     derived_tvg_id = (
@@ -104,8 +104,8 @@ def clean_group_title(entry, REMOVE_TERMS, REMOVE_DEFAULTS):
                     )
 
                     # Append the last 3 characters of 'stream_url' with a period
-                    # if len(stream_url) >= 3:
-                    #     derived_tvg_id += f"{stream_url[-3:]}"
+                    if len(stream_url) >= 3:
+                        derived_tvg_id += f".{stream_url[-3:]}"
 
                     # Update 'tvg-id' in the entry
                     entry['tvg-id'] = derived_tvg_id
