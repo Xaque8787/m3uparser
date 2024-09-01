@@ -132,6 +132,21 @@ Then run:
 docker compose up -d
 ```
 
+##### EZPZTV APK for Fire TV and Google Tv
+
+To install the EZPZTV Fire TV app for firesticks or Google TV devices.
+
+In the .env file set APK value to true `APK=true`
+
+In the compose file un comment the ports: section
+
+`ports:
+    - 2112:2112`
+
+After starting the container, once the script has initially ran, use Downloader app for Fire TV and go to your servers ip address and port 2112. This will automatically start the download of the EZPZTV apk, and once download is complete you can install it. The webserver serving the apk file will close automatically after a single download, you can then remove APK=true and the port mapping from the compose file. If you do not though, it will not start the webserver on subsequent runs. If you need to install the apk again you can run the command
+
+`docker exec -it ezpztv /bin/bash -c "python3 parser/server_apk/apk.py"`
+
 ## Basic m3u Parsing Information
 
 **Add more values to the environment variables in the compose file to extend the defaults.**
