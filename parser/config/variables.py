@@ -104,6 +104,7 @@ def variables_all(process_env_variable, str_to_bool, process_env_special, *args)
         'url_m3u': os.getenv('M3U_URL', ""),
         'epg_xml': os.getenv('EPG_URL', ""),
         'apk_server': str_to_bool(os.getenv('APK', "")),
+        'skip_header': str_to_bool(os.getenv('BYPASS_HEADER', "")),
         'SERVER_CFG': str_to_bool(os.getenv('SERVER_SETUP', "")),
         'APK_DLOAD': str_to_bool(os.getenv('APK_DLOAD', ""))
 

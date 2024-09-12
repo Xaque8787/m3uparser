@@ -21,7 +21,7 @@ services:
       - REPLACE_TERMS # Optional, add more/different replace values, does not override the defaults
       - CLEANERS= # Optional, add more/different cleaner values, does not override the defaults
       - CLEAN_SYNC= # If set to true will remove titles from VOD folders that are not present in m3u files, Defaults to false if blank.
-      - LIVE_TV= # Default is false, true will make a combined livetv.m3u from all live tv streams in M3U_URL
+      - LIVE_TV= # Default is true, true will make a combined livetv.m3u from all live tv streams in M3U_URL
       - EPG_URL="https://epg_url.com, https://epg2_url.com, etc..."
       - UNSORTED= # Default is false if blank, true will put Unsorted_VOD at same path as the other VOD folders.
       - REFRESH_LIB= # Default is false if blank. Will refresh libraries after each parsing.
@@ -103,6 +103,7 @@ volumes:
 | ENV VARIABLE  | VALUES                                              | DESCRIPTION                                                                                                   | EXAMPLE                                      | DEFAULT VALUES                     |
 | ------------- |:---------------------------------------------------:|:-------------------------------------------------------------------------------------------------------------:|:--------------------------------------------:|:----------------------------------:|
 | M3U_URL       | any url(s), in quotes, and seperated with a comma , | Include all URLs you want to be parsed                                                                        | "https://m3u_URL1.com, https://m3u_URL2.com" | n/a                                |
+| BYPASS_HEADER | true/false                                          | Bypass checking url header for content-type and content-disposition.                                          | False                                        | False                              |
 | HOURS         | numeric value                                       | Number representing the interval you want to update from m3u urls                                             | 12                                           | 8                                  |
 | SCRUB_HEADER  | any text, in quotes, and seperated with a comma ,   | Removes value and preceding text from begining of group-title line                                            | "HD :"                                       | "HD :, SD :"                       |
 | REMOVE_TERMS  | any text, in quotes, and seperated with a comma ,   | Removes value(s) set from file and directory names                                                            | "x264, 720p"                                 | "720p, WEB, h264,H264, HDTV, x264" |
@@ -110,7 +111,7 @@ volumes:
 | CLEANERS      | series,movie,tv,unsorted                            | Type of stream to apply REMOVE_TERMS value to                                                                 | tv, movies                                   | tv                                 |
 | REFRESH_LIB   | true/false                                          | Refresh Jellyfin libraries after parsing                                                                      | false                                        | false                              |
 | CLEAN_SYNC    | true/false                                          | Will remove titles from VOD folders that are not present in m3u.                                              | false                                        | false                              |
-| LIVE_TV       | true/false                                          | Parse live tv streams in m3u urls and creates a single livetv.m3u                                             | true/false                                   | false                              |
+| LIVE_TV       | true/false                                          | Parse live tv streams in m3u urls and creates a single livetv.m3u                                             | true/false                                   | true                               |
 | UNSORTED      | true/false                                          | Creates a VOD folder for undefined streams, either misspelled or poorly labeled streams                       | true/false                                   | false                              |
 | USER_NAME     | Pick-a-Username                                     | Choose a username for the admin user of the server/Threadfin                                                  | majordude                                    | n/a                                |
 | PASSWORD      | Pick-a-Password                                     | Choose a password for the admin user of the server/Threadfin                                                  | some_password                                | n/a                                |
@@ -191,7 +192,7 @@ Default is set to: `"1/2=\u00BD, /=-"`
 
 Set `LIVE_TV=true` to generate a `livetv.m3u` file with all live TV streams from the provided m3u URLs. This file will be placed next to your VOD folders, and will be picked up by EZPZTV for configuring live tv tuners.
 
-Default is set to: `LIVE_TV=false`
+Default is set to: `LIVE_TV=true`
 
 If you supply url(s) to the `EPG_URL=` variable, they will be added as xmltv guide data in the server. Put value inside double quotes, and seperate urls with a comma.
 
@@ -202,6 +203,10 @@ If you supply url(s) to the `EPG_URL=` variable, they will be added as xmltv gui
 The default for EZPZTV is to set libraries to real time monitoring. So content is added picked up on the server when it is added from a parser run (interval you set). However you can force a library refresh every interval by setting `REFRESH_LIB=true` in your compose or ezpztv.env file.
 
 Default is set to `REFRESH_LIB=false`
+
+### BYPASS_HEADER
+
+Setting this to true will have the script download the m3u urls regardless if it is available from provider or not. It will still check for 200 response from url, but will not check for content-type or content-disposition from the header response. These two checks are useful for ensuring the m3u file downloaded is actually available from the provider. In some cases if your provider is "down", you still may get a 200ok response from their server, but the m3u file that will be downloaded will be empty, resulting in a failed parsing. There are cases where the provider does not have a content-disposition entry in their url header response, so setting this env variable to false will bypass this check and download the m3u file regardless. 
 
 ### CLEAN_SYNC
 

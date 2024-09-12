@@ -118,9 +118,29 @@ def move_files(file_path, destination_path):
     print(f"Moved {file_path} to {destination_path}")
 
 
-def prepare_m3us(URLS, m3u_dir, m3u_file_path):
+def prepare_m3us(URLS, m3u_dir, m3u_file_path, skip_header=None):
     for vodurl in URLS:
         try:
+            # If skip_header is True, skip the header checks and download directly
+            if skip_header:
+                print('Skipping url header check.')
+                response = requests.get(vodurl)
+                print(f"GET request to {vodurl} returned status code: {response.status_code}")
+
+                if response.status_code == 200:
+                    # Determine the filename from the URL
+                    filename = os.path.basename(vodurl)
+                    file_path = os.path.join(m3u_dir, filename)
+
+                    # Save the file content
+                    with open(file_path, 'wb') as file:
+                        file.write(response.content)
+                    print(f"Downloaded file from URL: {vodurl}")
+                else:
+                    print(f"GET request failed for {vodurl} - Status code: {response.status_code}")
+                continue  # Skip the rest of the loop for this URL and go to the next one
+
+            # Default behavior: check headers before downloading
             response = requests.head(vodurl)
             print(f"HEAD response headers for {vodurl}: {response.headers}")
             print(f"HEAD request to {vodurl} returned status code: {response.status_code}")
@@ -172,6 +192,63 @@ def prepare_m3us(URLS, m3u_dir, m3u_file_path):
                 print(f"Cannot read {file_path}")
 
     print(f"All files have been combined into {m3u_file_path}")
+
+
+
+# def prepare_m3us(URLS, m3u_dir, m3u_file_path):
+#     for vodurl in URLS:
+#         try:
+#             response = requests.head(vodurl)
+#             print(f"HEAD response headers for {vodurl}: {response.headers}")
+#             print(f"HEAD request to {vodurl} returned status code: {response.status_code}")
+#
+#             if response.status_code == 200:
+#                 content_type = response.headers.get('Content-Type')
+#                 content_disposition = response.headers.get('content-disposition')
+#
+#                 if content_type and 'filename=' in (content_disposition or ''):
+#                     response = requests.get(vodurl)
+#                     print(f"GET request to {vodurl} returned status code: {response.status_code}")
+#
+#                     if response.status_code == 200:
+#                         # Determine the filename from the URL
+#                         filename = os.path.basename(vodurl)
+#                         file_path = os.path.join(m3u_dir, filename)
+#
+#                         # Save the file content
+#                         with open(file_path, 'wb') as file:
+#                             file.write(response.content)
+#                         print(f"Downloaded file from URL: {vodurl}")
+#                     else:
+#                         print(f"GET request failed for {vodurl} - Status code: {response.status_code}")
+#                 else:
+#                     print(f"URL not valid: {vodurl} - Content-Type or filename missing. Skipping...")
+#             else:
+#                 print(f"URL is not accessible: {vodurl} - Status code: {response.status_code}")
+#         except requests.RequestException as e:
+#             print(f"Error processing URL {vodurl}: {e}")
+#
+#     print("All URLs processed.")
+#
+#     # Create the output file and add #EXTM3U at the beginning
+#     with open(m3u_file_path, 'w') as outfile:
+#         outfile.write("#EXTM3U\n")
+#         # Loop through each file in the specified directory
+#         for file in os.listdir(m3u_dir):
+#             file_path = os.path.join(m3u_dir, file)
+#             print(f"Processing file: {file_path}")
+#             # Check if the file exists and is readable
+#             if os.path.isfile(file_path):
+#                 with open(file_path, 'r') as infile:
+#                     # Skip the first line and append the rest to the output file
+#                     lines = infile.readlines()[1:]
+#                     if lines:
+#                         outfile.write("\n")
+#                         outfile.writelines(lines)
+#             else:
+#                 print(f"Cannot read {file_path}")
+#
+#     print(f"All files have been combined into {m3u_file_path}")
 
 
 # sync_directories with remove from src if not in dest
