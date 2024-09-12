@@ -3,6 +3,7 @@ from utils import *
 from config import *
 from jellyfin_api import *
 from threadfin import *
+from server_apk import *
 
 
 def main():
@@ -14,7 +15,7 @@ def main():
         # Set up logging
         vars(setup_logging, variables_all, 'log_file')
         # Download & concatenate all m3u urls
-        vars(prepare_m3us, variables_all, 'URLS', 'm3u_dir', 'm3u_file_path')
+        vars(prepare_m3us, variables_all, 'URLS', 'm3u_dir', 'm3u_file_path', 'skip_header')
         # Parse the m3u file and get a list of dictionaries containing key-value pairs
         entries, errors = vars(parse_m3u_file, variables_all, 'm3u_file_path', clean_group_title, process_value,
                                'REPLACE_TERMS', 'REPLACE_DEFAULTS', 'SCRUB_HEADER', 'SCRUB_DEFAULTS', 'REMOVE_TERMS',
@@ -46,7 +47,8 @@ def main():
              ezpztv_setup=ezpztv_setup, application_version='application_version', APIKEY='APIKEY', tf_update=tf_update,
              jellyfin_url='jellyfin_url', thread_user='thread_user', thread_pass='thread_pass', thread_url='thread_url',
              apikey_run=apikey_run, run_websocket_operations=run_websocket_operations,
-             run_reload_operations=run_reload_operations)
+             run_reload_operations=run_reload_operations, apk_server='apk_server',
+             start_server=start_server, APK_DLOAD='APK_DLOAD')
         # Wait interval time to re-run script
         vars(run_timer, variables_all, main, 'HOURS')
 

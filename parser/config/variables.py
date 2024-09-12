@@ -103,7 +103,10 @@ def variables_all(process_env_variable, str_to_bool, process_env_special, *args)
         'remove_sync': str_to_bool(os.getenv('CLEAN_SYNC', "")),
         'url_m3u': os.getenv('M3U_URL', ""),
         'epg_xml': os.getenv('EPG_URL', ""),
-        'SERVER_CFG': str_to_bool(os.getenv('SERVER_SETUP', ""))
+        'apk_server': str_to_bool(os.getenv('APK', "")),
+        'skip_header': str_to_bool(os.getenv('BYPASS_HEADER', "")),
+        'SERVER_CFG': str_to_bool(os.getenv('SERVER_SETUP', "")),
+        'APK_DLOAD': str_to_bool(os.getenv('APK_DLOAD', ""))
 
     }
     # if len(args) == 1:
@@ -181,7 +184,7 @@ def update_env_file(key, value):
 def torf(move_files=None, live_tv=None, sync_directories=None, UNSORTED=None, SERVER_CFG=None, wait_for_server=None,
          ezpztv_task=None, ezpztv_setup=None, application_version=None, APIKEY=None, apikey_run=None,
          jellyfin_url=None, thread_user=None, thread_pass=None, thread_url=None, tf_update=None,
-         run_websocket_operations=None, run_reload_operations=None):
+         run_websocket_operations=None, run_reload_operations=None, apk_server=None, start_server=None, APK_DLOAD=None):
     try:
 
         if UNSORTED is True:
@@ -215,18 +218,21 @@ def torf(move_files=None, live_tv=None, sync_directories=None, UNSORTED=None, SE
         if application_version == "m3uparser" and thread_user and thread_pass:
             print("Running Threadfin m3u update")
             tf_update(thread_user, thread_pass, thread_url)
+        if apk_server and APK_DLOAD is False:
+            start_server()
+            update_env_file('APK_DLOAD', 'True')
     except Exception as e:
         print(f"An error occurred: {e}")
 
 
 # Debugging for variable values
-# jellyfin_variables = variables_all(process_env_variable, str_to_bool, process_env_special, 'host', 'port', 'epg_path',
+# jellyfin_variables = variables_all(process_env_variable, str_to_bool, process_env_special, 'apk_server', 'port', 'epg_path',
 #                                    'thread_url', 'm3u_file_path', 'remove_sync', 'main_user',
 #                                    'jellyfin_url', 'live_tv', 'UNSORTED', 'application_version', 'SERVER_CFG',
 #                                    'main_pass', 'log_file', 'script_dir', 'root_dir', 'REMOVE_TERMS', 'live_tv_dir',
 #                                    'livetv_file')
 # jellyfin_url = jellyfin_variables['jellyfin_url']
-# live_tv = f'{jellyfin_variables['port']}:{jellyfin_variables['host']}/{jellyfin_variables['live_tv_dir']}'
+#live_tv = f'{jellyfin_variables['port']}:{jellyfin_variables['host']}/{jellyfin_variables['live_tv_dir']}'
 # if __name__ == "__main__":
 #     print(jellyfin_variables)
-#     print(live_tv)
+    #print(live_tv)

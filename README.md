@@ -21,7 +21,7 @@ services:
       - REPLACE_TERMS # Optional, add more/different replace values, does not override the defaults
       - CLEANERS= # Optional, add more/different cleaner values, does not override the defaults
       - CLEAN_SYNC= # If set to true will remove titles from VOD folders that are not present in m3u files, Defaults to false if blank.
-      - LIVE_TV= # Default is false, true will make a combined livetv.m3u from all live tv streams found in m3u files. Will be placed in /VODS/Live_TV 
+      - LIVE_TV= # Default is true, true will make a combined livetv.m3u from all live tv streams found in m3u files. Will be placed in /VODS/Live_TV 
       - UNSORTED= # Default is false, true will put at /VODS/Unsorted_VOD
       - JELLYFIN_URL= # Requires a Jellyfin server to be running. http://<jfin_url:8096>
       - API_KEY= # Generate API key on server and enter it here. Requires a Jellyfin server to be running.
@@ -39,6 +39,7 @@ services:
 | ENV VARIABLE  | VALUES                                              | DESCRIPTION                                                                                                   | EXAMPLE                                      | DEFAULT VALUES                      |
 | ------------- |:---------------------------------------------------:|:-------------------------------------------------------------------------------------------------------------:|:--------------------------------------------:|:-----------------------------------:|
 | M3U_URL       | any url(s), in quotes, and seperated with a comma , | Include all URLs you want to be parsed                                                                        | "https://m3u_URL1.com, https://m3u_URL2.com" | n/a                                 |
+| BYPASS_HEADER | true/false                                          | Bypass checking url header for content-type and content-disposition.                                          | False                                        | False                               |
 | HOURS         | numeric value                                       | Number representing the interval you want to update from m3u urls                                             | 12                                           | 8                                   |
 | SCRUB_HEADER  | any text, in quotes, and seperated with a comma ,   | Removes value and preceding text from begining of group-title line                                            | "HD :"                                       | "HD :, SD :"                        |
 | REMOVE_TERMS  | any text, in quotes, and seperated with a comma ,   | Removes value(s) set from file and directory names                                                            | "x264, 720p"                                 | "720p, WEB, h264, H264, HDTV, x264" |
@@ -46,7 +47,7 @@ services:
 | CLEANERS      | series,movie,tv,unsorted                            | Type of stream to apply REMOVE_TERMS value to                                                                 | tv, movies                                   | tv                                  |
 | REFRESH_LIB   | true/false                                          | Refresh Jellyfin libraries after parsing                                                                      | false                                        | false                               |
 | CLEAN_SYNC    | true/false                                          | Will remove titles from VOD folders that are not present in m3u.                                              | false                                        | false                               |
-| LIVE_TV       | true/false                                          | Parse live tv streams in m3u urls and creates a single livetv.m3u                                             | true/false                                   | false                               |
+| LIVE_TV       | true/false                                          | Parse live tv streams in m3u urls and creates a single livetv.m3u                                             | true/false                                   | true                                |
 | UNSORTED      | true/false                                          | Creates a VOD folder for undefined streams, either misspelled or poorly labeled streams                       | true/false                                   | false                               |
 
 ## Instalation Process
@@ -55,7 +56,7 @@ services:
 mkdir m3uparser
 cd m3uparser
 curl -o docker-compose.yaml https://raw.githubusercontent.com/Xaque8787/m3uparser/main/m3uparser/docker-compose.yaml
-curl -o m3uparser.env https://raw.githubusercontent.com/Xaque8787/m3uparser/main/m3uparser/m3uparser.env
+curl -o ezpztv.env https://raw.githubusercontent.com/Xaque8787/m3uparser/main/m3uparser/m3uparser.env
 ```
 
 Then edit the m3uparser.env file with your credentials and desired values.
@@ -123,6 +124,10 @@ If you do not have a Jellyfin server set up, but would like a easy way to get on
 
 If you have Threadfin setup and want to refresh the m3u/xmltv data when the script is run/re run, then supply the ip:port username and password to the appropriate env variables.
 
+### BYPASS_HEADER
+
+Setting this to true will have the script download the m3u urls regardless if it is available from provider or not. It will still check for 200 response from url, but will not check for content-type or content-disposition from the header response. These two checks are useful for ensuring the m3u file downloaded is actually available from the provider. In some cases if your provider is "down", you still may get a 200ok response from their server, but the m3u file that will be downloaded will be empty, resulting in a failed parsing. There are cases where the provider does not have a content-disposition entry in their url header response, so setting this env variable to false will bypass this check and download the m3u file regardless. 
+
 ### CLEAN_SYNC
 
 If this is set to true, then every time a parsing of m3u urls is complete, it will add new content from the m3u urls to your VOD libraries, and any content in your VOD libraries that is not in the m3u urls will be removed. This should be used with caution, if you add and remove m3u urls from the env variable often, then this will remove content from the VOD library. If your provider removes content often and you want to keep your VOD libraries in sync with what is available, then setting this to true is useful.
@@ -133,7 +138,7 @@ Default is set to `CLEAN_SYNC=false`
 
 Set `LIVE_TV=true` to generate a `livetv.m3u` file with all live TV streams from the provided m3u URLs. This file will be placed next to your VOD folders, /VODS/Live_TV
 
-Default is set to: `LIVE_TV=false`
+Default is set to: `LIVE_TV=true`
 
 ### UNSORTED
 
