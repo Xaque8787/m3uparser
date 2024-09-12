@@ -20,7 +20,7 @@ ENV UNSORTED=False
 ENV JELLYFIN_URL="http://10.21.12.8:8096"
 ENV USER_NAME=
 ENV PASSWORD=
-ENV LIVE_TV=False
+ENV LIVE_TV=True
 ENV EPG_URL=
 ENV REFRESH_LIB=False
 ENV CLEAN_SYNC=False
@@ -32,6 +32,7 @@ ENV TF_PORT=34400
 ENV TF_USER=
 ENV TF_PASS=
 ENV TF_URL=
+ENV BYPASS_HEADER=
 EXPOSE 2112
 
 RUN chmod +x entrypoint.sh && chmod +x /usr/src/app/parser/parser_script.py && chmod +x /usr/src/app/parser/server_apk/apk.py
