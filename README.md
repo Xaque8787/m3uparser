@@ -17,7 +17,8 @@ services:
       - M3U_URL= # "https://m3u_URL1.com, https://m3u_URL2.com, etc..."
       - HOURS=12 # update interval, setting this optional, default 12hrs.
       - SCRUB_HEADER= # Optional, add more/different scrub values, does not override the defaults
-      - REMOVE_TERMS= # Optional, add more/different remove term values, does not override the defaults
+      - EXCLUDE_TERMS= # Optional, exclude content that has defined term in the group-title value in m3u
+      - REMOVE_TERMS= # Optional, add more/different remove term values, does not override the defaults
       - REPLACE_TERMS # Optional, add more/different replace values, does not override the defaults
       - CLEANERS= # Optional, add more/different cleaner values, does not override the defaults
       - CLEAN_SYNC= # If set to true will remove titles from VOD folders that are not present in m3u files, Defaults to false if blank.
@@ -106,6 +107,7 @@ volumes:
 | BYPASS_HEADER | true/false                                          | Bypass checking url header for content-type and content-disposition.                                          | False                                        | False                              |
 | HOURS         | numeric value                                       | Number representing the interval you want to update from m3u urls                                             | 12                                           | 8                                  |
 | SCRUB_HEADER  | any text, in quotes, and seperated with a comma ,   | Removes value and preceding text from begining of group-title line                                            | "HD :"                                       | "HD :, SD :"                       |
+| EXCLUDE_TERMS | any text, in quotes, and seperated with a comma ,   | Excludes content that contains defined term if found in the group-title                                       | "AR -, FR -"                                 | ""                                 |
 | REMOVE_TERMS  | any text, in quotes, and seperated with a comma ,   | Removes value(s) set from file and directory names                                                            | "x264, 720p"                                 | "720p, WEB, h264,H264, HDTV, x264" |
 | REPLACE_TERMS | "term-to-replace=replace-value"                     | Replaces one value with another. Separate terms with an = and term on left is replaced with term to the right | "replace-this=with-this"                     | "1/2=\u00BD, /=-"                  |
 | CLEANERS      | series,movie,tv,unsorted                            | Type of stream to apply REMOVE_TERMS value to                                                                 | tv, movies                                   | tv                                 |

@@ -19,7 +19,7 @@ def main():
         # Parse the m3u file and get a list of dictionaries containing key-value pairs
         entries, errors = vars(parse_m3u_file, variables_all, 'm3u_file_path', clean_group_title, process_value,
                                'REPLACE_TERMS', 'REPLACE_DEFAULTS', 'SCRUB_HEADER', 'SCRUB_DEFAULTS', 'REMOVE_TERMS',
-                               'REMOVE_DEFAULTS')
+                               'REMOVE_DEFAULTS', 'EXCLUDE_TERM')
         # Process each entry dictionary and track created .strm files
         vars(proc_entries, variables_all, entries, errors, 'tv_dir', 'movies_dir', 'unsorted_dir')
         # Extract live TV entries and process them separately
