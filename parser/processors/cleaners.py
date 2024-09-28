@@ -12,13 +12,13 @@ def clean_group_title(entry, REMOVE_TERMS, REMOVE_DEFAULTS):
     try:
         # Check if it's a TV show and extract season_episode and air_date
         season_episode_match = re.search(
-            r'\b[sS]\d{1,3}[eE]\d{1,3}\b|\b[0-9]{1,3}[xX][0-9]{1,3}\b|\b[sS]\d{1,3}[eE]\d{1,3}\b', value)
+            r'\b[sS]\d{1,3}[eE]\d{1,3}\b|\b[0-9]{1,3}[xX][0-9]{1,3}\b|\b[sS]\d{1,3} [eE]\d{1,3}\b', value)
         if season_episode_match:
             entry['season_episode'] = season_episode_match.group(0).strip()
             entry['series'] = True
             entry['tv_show'] = True
             show_title_match = re.search(
-                r'.*?(?=\b[sS]\d{1,3}[eE]\d{1,3}\b|\b[0-9]{1,3}[xX][0-9]{1,3}\b|\b[sS]\d{1,3}[eE]\d{1,3}\b)', value)
+                r'.*?(?=\b[sS]\d{1,3}[eE]\d{1,3}\b|\b[0-9]{1,3}[xX][0-9]{1,3}\b|\b[sS]\d{1,3} [eE]\d{1,3}\b)', value)
             if show_title_match:
                 show_title = show_title_match.group(0).strip()
                 if cleaners['clean_series']:
@@ -99,6 +99,7 @@ def clean_group_title(entry, REMOVE_TERMS, REMOVE_DEFAULTS):
                         .replace(':', '.')
                         .replace('(', '.')
                         .replace(')', ".")
+                        .replace('/', ".")
                         .replace('..', ".")
                         .strip('.')
                     )
@@ -217,17 +218,6 @@ def clean_up(m3u_dir, m3u_file_path, master_mov_dir, master_tv_dir, master_unsor
     if UNSORTED is False:
         folders_to_remove.append(local_unsorted)
 
-    # Remove folders and their contents
-    for folder in folders_to_remove:
-        try:
-            if os.path.exists(folder) and os.path.isdir(folder):
-                shutil.rmtree(folder)
-                print(f"Removed folder and its contents: {folder}")
-            else:
-                print(f"Folder does not exist or is not a directory: {folder}")
-        except Exception as e:
-            print(f"Error removing folder {folder}: {e}")
-
     # Remove specific files
     for file in files_to_remove:
         try:
@@ -238,6 +228,17 @@ def clean_up(m3u_dir, m3u_file_path, master_mov_dir, master_tv_dir, master_unsor
                 print(f"File does not exist or is not a regular file: {file}")
         except Exception as e:
             print(f"Error removing file {file}: {e}")
+
+    # Remove folders and their contents
+    for folder in folders_to_remove:
+        try:
+            if os.path.exists(folder) and os.path.isdir(folder):
+                shutil.rmtree(folder)
+                print(f"Removed folder and its contents: {folder}")
+            else:
+                print(f"Folder does not exist or is not a directory: {folder}")
+        except Exception as e:
+            print(f"Error removing folder {folder}: {e}")
 
     # Remove all files from a directory but keep the directory itself
     if os.path.exists(directory_to_clean) and os.path.isdir(directory_to_clean):

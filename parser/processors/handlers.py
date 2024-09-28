@@ -27,7 +27,7 @@ def process_live_tv_entries(entries, livetv_file):
 def handle_entry(entry, tv_dir, movies_dir, unsorted_dir, write_to_file, errors):
     try:
 
-        if entry.get('series') and entry.get('tv_show'):
+        if entry.get('series') and entry.get('tv_show') and not entry.get("exclude"):
             show_title = entry.get('show_title')
             season = entry.get('season')
             season_episode = entry.get('season_episode')
@@ -40,7 +40,7 @@ def handle_entry(entry, tv_dir, movies_dir, unsorted_dir, write_to_file, errors)
             write_to_file(strm_file, entry.get('stream_url', ''))
             return strm_file
 
-        elif entry.get('television') and entry.get('tv_show'):
+        elif entry.get('television') and entry.get('tv_show') and not entry.get("exclude"):
             air_date = entry.get('air_date')
             show_title = entry.get('show_title')
             guest_star = entry.get('guest_star')
@@ -58,7 +58,7 @@ def handle_entry(entry, tv_dir, movies_dir, unsorted_dir, write_to_file, errors)
             write_to_file(strm_file, entry.get('stream_url', ''))
             return strm_file
 
-        elif entry.get('movie'):
+        elif entry.get('movie') and not entry.get("exclude"):
             movie_title = entry.get('movie_title')
             movie_date = entry.get('movie_date')
             movie_dir_path = os.path.join(movies_dir, f"{movie_title} ({movie_date})")
@@ -70,7 +70,7 @@ def handle_entry(entry, tv_dir, movies_dir, unsorted_dir, write_to_file, errors)
             write_to_file(strm_file, entry.get('stream_url', ''))
             return strm_file
 
-        elif entry.get('unsorted'):
+        elif entry.get('unsorted') and not entry.get("exclude"):
             group_title = entry.get('group-title', '')
             unsorted_dir_path = os.path.join(unsorted_dir, group_title)
             if not os.path.exists(unsorted_dir_path):

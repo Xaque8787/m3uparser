@@ -81,6 +81,7 @@ def variables_all(process_env_variable, str_to_bool, process_env_special, *args)
         'main_pass': os.getenv('PASSWORD', ""),
         'SCRUB_HEADER': process_env_variable(os.getenv('SCRUB_HEADER', "")),
         'SCRUB_DEFAULTS': process_env_variable(os.getenv('SCRUB_DEFAULTS', "")),
+        'EXCLUDE_TERM': process_env_variable(os.getenv('EXCLUDE_TERMS', "")),
         'REMOVE_TERMS': process_env_variable(os.getenv('REMOVE_TERMS', "")),
         'REMOVE_DEFAULTS': process_env_variable(os.getenv('REMOVE_DEFAULTS', "")),
         'REPLACE_TERMS': process_env_special(os.getenv('REPLACE_TERMS', "")),
@@ -226,13 +227,13 @@ def torf(move_files=None, live_tv=None, sync_directories=None, UNSORTED=None, SE
 
 
 # Debugging for variable values
-# jellyfin_variables = variables_all(process_env_variable, str_to_bool, process_env_special, 'apk_server', 'port', 'epg_path',
-#                                    'thread_url', 'm3u_file_path', 'remove_sync', 'main_user',
-#                                    'jellyfin_url', 'live_tv', 'UNSORTED', 'application_version', 'SERVER_CFG',
-#                                    'main_pass', 'log_file', 'script_dir', 'root_dir', 'REMOVE_TERMS', 'live_tv_dir',
-#                                    'livetv_file')
+jellyfin_variables = variables_all(process_env_variable, str_to_bool, process_env_special, 'EXCLUDE_TERM', 'port', 'epg_path',
+                                   'thread_url', 'm3u_file_path', 'remove_sync', 'main_user',
+                                   'jellyfin_url', 'live_tv', 'UNSORTED', 'application_version', 'SERVER_CFG',
+                                   'main_pass', 'log_file', 'script_dir', 'root_dir', 'REMOVE_TERMS', 'live_tv_dir',
+                                   'livetv_file')
 # jellyfin_url = jellyfin_variables['jellyfin_url']
-#live_tv = f'{jellyfin_variables['port']}:{jellyfin_variables['host']}/{jellyfin_variables['live_tv_dir']}'
-# if __name__ == "__main__":
-#     print(jellyfin_variables)
-    #print(live_tv)
+# live_tv = f'{jellyfin_variables['port']}:{jellyfin_variables['host']}/{jellyfin_variables['live_tv_dir']}'
+if __name__ == "__main__":
+    print(jellyfin_variables)
+    # print(live_tv)

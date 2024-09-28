@@ -2,7 +2,7 @@ import re
 
 
 def parse_m3u_file(m3u_file_path, clean_group_title, process_value, REPLACE_TERMS, REPLACE_DEFAULTS, SCRUB_HEADER,
-                   SCRUB_DEFAULTS, REMOVE_TERMS, REMOVE_DEFAULTS):
+                   SCRUB_DEFAULTS, REMOVE_TERMS, REMOVE_DEFAULTS, EXCLUDE_TERM):
     try:
         with open(m3u_file_path, 'r', encoding='utf-8') as file:
             lines = file.readlines()
@@ -24,6 +24,16 @@ def parse_m3u_file(m3u_file_path, clean_group_title, process_value, REPLACE_TERM
                 # Extract key=value pairs from the #EXTINF line and remove header value(s)
                 key_value_pairs = extract_key_value_pairs(line)
                 if 'group-title' in key_value_pairs:
+                    group_title = key_value_pairs['group-title']
+
+                    # Check each term in EXCLUDE_TERM against group-title
+                    for term in EXCLUDE_TERM:
+                        pattern = re.compile(term, flags=re.IGNORECASE)
+                        if pattern.search(group_title):
+                            key_value_pairs['exclude'] = True
+                            break  # Exit loop once a match is found
+                if 'group-title' in key_value_pairs:
+
                     key_value_pairs['group-title'] = process_value(key_value_pairs['group-title'],
                                                                    remove_header=SCRUB_DEFAULTS)
                     key_value_pairs['group-title'] = process_value(key_value_pairs['group-title'],
