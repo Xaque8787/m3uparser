@@ -151,7 +151,7 @@ Key=Value pairs are made from each item in the EXTINF line. The values are then 
 
 ### SCRUB_HEADER
 
-Example: `SCRUB_HEADER="HD :, SD :"`. This removes these values, if they exist, and any preceding text from the `group-title` line. So a line like this, `group-title="Movie VOD",HD : The Fall Guy 2024` will become `group-title= The Fall Guy 2024`. Ensure spaces are included where needed. Add multiple values to `SCRUB_HEADER=`, separated by commas, in a single set of quotes.
+Example: `SCRUB_HEADER="HD :, SD :"`. This removes these values, if they exist, and any preceding text from the `group-title` line. So a line like this, `group-title="Movie VOD",HD : The Fall Guy 2024` will become `group-title= The Fall Guy 2024`. Ensure spaces are included where needed. Add multiple values to `SCRUB_HEADER=`, separated by commas, in a single set of quotes. You can escape charcters like , or " but using a \ `SCRUB_HEADER="Movie VOD\,"` If you need to escape " that string must not be the first or last in the defined list, and you may add "dummy" values to avoid this. So if your group-title looks like this `group-title="Movie VOD",The Fall Guy 2024`, your SCRUB_HEADER value should look like this `SCRUB_HEADER="dummyvalue, \"Movie VOD\"\,, fakevalue"`
 
 Default is set to: `SCRUB_HEADER="HD :, SD :"`
 
