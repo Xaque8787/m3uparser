@@ -17,7 +17,7 @@ services:
       - M3U_URL= # "https://m3u_URL1.com, https://m3u_URL2.com, etc..."
       - HOURS=12 # update interval, setting this optional, default 12hrs.
       - SCRUB_HEADER= # Optional, add more/different scrub values, does not override the defaults
-      
+      - EXCLUDE_TERMS= # Optional, this acts as a filter to ignore stream that contain defined value in group-title
       - REMOVE_TERMS= # Optional, add more/different remove term values, does not override the defaults
       - REPLACE_TERMS # Optional, add more/different replace values, does not override the defaults
       - CLEANERS= # Optional, add more/different cleaner values, does not override the defaults
@@ -26,10 +26,10 @@ services:
       - UNSORTED= # Default is false, true will put at /VODS/Unsorted_VOD
       - JELLYFIN_URL= # Requires a Jellyfin server to be running. http://<jfin_url:8096>
       - API_KEY= # Generate API key on server and enter it here. Requires a Jellyfin server to be running.
-      -TF_HOST= # IP address used for Threadfin, example 127.0.0.1
-      -TF_PORT= # Port used for Threadfin, example 34400
-      -TF_USER= # Username being used for Threadfin
-      -TF_PASS= # Password for Threadfin
+      - TF_HOST= # IP address used for Threadfin, example 127.0.0.1
+      - TF_PORT= # Port used for Threadfin, example 34400
+      - TF_USER= # Username being used for Threadfin
+      - TF_PASS= # Password for Threadfin
       - REFRESH_LIB= # Requires a Jellyfin server to be running. Will refresh libraries after each parsing.
 
     volumes:
@@ -91,7 +91,7 @@ Key=Value pairs are made from each item in the EXTINF line. The values are then 
 
 ### SCRUB_HEADER
 
-Example: `SCRUB_HEADER="HD :, SD :"`. This removes these values, if they exist, and any preceding text from the `group-title` line. So a line like this, `group-title="Movie VOD",HD : The Fall Guy 2024` will become `group-title= The Fall Guy 2024`. Ensure spaces are included where needed. Add multiple values to `SCRUB_HEADER=`, separated by commas, in a single set of quotes.
+Example: `SCRUB_HEADER="HD :, SD :"`. This removes these values, if they exist, and any preceding text from the `group-title` line. So a line like this, `group-title="Movie VOD",HD : The Fall Guy 2024` will become `group-title= The Fall Guy 2024`. Ensure spaces are included where needed. Add multiple values to `SCRUB_HEADER=`, separated by commas, in a single set of quotes. You can escape charcters like , or " but using a \ `SCRUB_HEADER="Movie VOD\,"` If you need to escape " that string must not be the first or last in the defined list, and you may add "dummy" values to avoid this. So if your group-title looks like this `group-title="Movie VOD",The Fall Guy 2024`, your SCRUB_HEADER value should look like this `SCRUB_HEADER="dummyvalue, \"Movie VOD\"\,, fakevalue`
 
 Default is set to: `SCRUB_HEADER="HD :, SD :"`
 
@@ -110,21 +110,6 @@ Default is set to: `tv`
 Add more replacements to `REPLACE_TERMS` in the format `"replace=value"`. For example: `REPLACE_TERMS="replace-this=with-this, dontwant=wantinstead"`. This replaces specified terms in all streams, except live TV.
 
 Default is set to: `"1/2=\u00BD, /=-"`
-
-### JELLYFIN INTEGRATION;   JELLYFIN_URL, API_KEY, REFRESH_LIB
-
-To utilize the Jellyfin integration, you must have a Jellyfin server accessible if you supplied the compose file with the `API_KEY` and `JELLYFIN_URL` env variable. If you supply a address to your working server, and an api key you generated on that server; then when this script is ran it will refresh your library if `REFRESH_LIB=true` to add new titles that are in m3u urls, if `CLEAN_SYNC=true` it will also then remove any titles not found in the m3u urls but are in your VOD libraries. If you have `LIVE_TV=true`, then it will also refresh your tv guide.
-
-**`JELLYFIN_URL`** should include http:// or https:// (DO NOT SURROUND WITH "")
-Logs will now be uploaded to the server as well.
-**`API_KEY`** Generate on server. Dashboard > Api Key > Add
-**`REFRESH_LIB`** True or false, depending on your preference.
-
-If you do not have a Jellyfin server set up, but would like a easy way to get one set up, checkout the branch of this repo for an automated setup https://github.com/Xaque8787/m3uparser/tree/ezpztv
-
-### THREADFIN INTEGRATION;   TF_HOST, TF_PORT, TF_USER, TF_PASS
-
-If you have Threadfin setup and want to refresh the m3u/xmltv data when the script is run/re run, then supply the ip:port username and password to the appropriate env variables.
 
 ### BYPASS_HEADER
 
@@ -147,6 +132,21 @@ Default is set to: `LIVE_TV=true`
 Set `UNSORTED=true` to create a VOD folder for poorly named or unidentified streams. This folder can be added manually to your Jellyfin server and edited through the web UI.
 
 Default is set to `UNSORTED=false`
+
+### JELLYFIN INTEGRATION;   JELLYFIN_URL, API_KEY, REFRESH_LIB
+
+To utilize the Jellyfin integration, you must have a Jellyfin server accessible if you supplied the compose file with the `API_KEY` and `JELLYFIN_URL` env variable. If you supply a address to your working server, and an api key you generated on that server; then when this script is ran it will refresh your library if `REFRESH_LIB=true` to add new titles that are in m3u urls, if `CLEAN_SYNC=true` it will also then remove any titles not found in the m3u urls but are in your VOD libraries. If you have `LIVE_TV=true`, then it will also refresh your tv guide.
+
+**`JELLYFIN_URL`** should include http:// or https:// (DO NOT SURROUND WITH "")
+Logs will now be uploaded to the server as well.
+**`API_KEY`** Generate on server. Dashboard > Api Key > Add
+**`REFRESH_LIB`** True or false, depending on your preference.
+
+If you do not have a Jellyfin server set up, but would like a easy way to get one set up, checkout the branch of this repo for an automated setup https://github.com/Xaque8787/m3uparser/tree/ezpztv
+
+### THREADFIN INTEGRATION;   TF_HOST, TF_PORT, TF_USER, TF_PASS
+
+If you have Threadfin setup and want to refresh the m3u/xmltv data when the script is run/re run, then supply the ip:port username and password to the appropriate env variables.
 
 ### ADDITIONAL OPTIONS
 
