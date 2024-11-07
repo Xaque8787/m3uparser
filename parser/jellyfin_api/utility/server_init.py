@@ -214,7 +214,7 @@ def rebrand_title(logo_file):
         # Define file paths
         file1 = f'{logo_file}/main.jellyfin.bundle.js'
         file2 = f'{logo_file}/index.html'
-        file3 = f'{logo_file}/73233.87c77dce22de92e7c77a.chunk.js'
+        file3 = f'{logo_file}/73233.1dfbcf4c3ce129a5ad6e.chunk.js'
 
         # Define replacements
         replacements = [
