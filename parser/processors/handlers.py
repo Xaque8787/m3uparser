@@ -185,9 +185,10 @@ def prepare_m3us(URLS, m3u_dir, m3u_file_path, skip_header=None):
                 with open(file_path, 'r') as infile:
                     # Skip the first line and append the rest to the output file
                     lines = infile.readlines()[1:]
-                    if lines:
-                        outfile.write("\n")
-                        outfile.writelines(lines)
+                    if len(lines) < 2:
+                        continue
+                    outfile.write("\n")
+                    outfile.writelines(lines)
             else:
                 print(f"Cannot read {file_path}")
 

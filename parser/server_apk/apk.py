@@ -5,7 +5,7 @@ import os
 
 PORT = 2112
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))  # Directory of the current script
-FILE_TO_SERVE = os.path.join(SCRIPT_DIR, "ezpztv-androidtv-v2.11.2-release.apk")
+FILE_TO_SERVE = os.path.join(SCRIPT_DIR, "ezpztv-androidtv-v2.1.12-release.apk")
 TIMEOUT = 3600  # Timeout in seconds
 
 class MyHandler(http.server.SimpleHTTPRequestHandler):
