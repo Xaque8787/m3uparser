@@ -1,14 +1,26 @@
 import os
+import re
 from dotenv import load_dotenv
 
 # Process functions for environment variables
 def process_env_variable(env_var_value):
     if isinstance(env_var_value, str):
-        # print(f"Processing environment variable: {env_var_value}")
-        processed_value = [item.strip() for item in env_var_value.strip('"').split(',') if item.strip()]
-        # print(f"Processed environment variable: {processed_value}")
+        # Use regex to split on commas not preceded by a backslash
+        items = re.split(r'(?<!\\),', env_var_value.strip('"'))
+
+        # Remove any backslashes used for escaping commas and strip whitespace
+        processed_value = [item.replace(r'\,', ',').strip() for item in items if item.strip()]
+
         return processed_value
     return env_var_value
+
+# def process_env_variable(env_var_value):
+#     if isinstance(env_var_value, str):
+#         # print(f"Processing environment variable: {env_var_value}")
+#         processed_value = [item.strip() for item in env_var_value.strip('"').split(',') if item.strip()]
+#         # print(f"Processed environment variable: {processed_value}")
+#         return processed_value
+#     return env_var_value
 
 
 def str_to_bool(value):
@@ -227,7 +239,7 @@ def torf(move_files=None, live_tv=None, sync_directories=None, UNSORTED=None, SE
 
 
 # Debugging for variable values
-jellyfin_variables = variables_all(process_env_variable, str_to_bool, process_env_special, 'EXCLUDE_TERM', 'port', 'epg_path',
+jellyfin_variables = variables_all(process_env_variable, str_to_bool, process_env_special, 'URLS', 'SCRUB_HEADER', 'port', 'epg_path',
                                    'thread_url', 'm3u_file_path', 'remove_sync', 'main_user',
                                    'jellyfin_url', 'live_tv', 'UNSORTED', 'application_version', 'SERVER_CFG',
                                    'main_pass', 'log_file', 'script_dir', 'root_dir', 'REMOVE_TERMS', 'live_tv_dir',
