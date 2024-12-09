@@ -45,8 +45,11 @@ def clean_group_title(entry, REMOVE_TERMS, REMOVE_DEFAULTS):
         air_date_match = re.search(
             r'\b(?:19\d{2} \d{2} \d{2}|20\d{2} \d{2} \d{2}|\d{2} \d{2} 19\d{2}|\d{2} \d{2} 20\d{2})\b', value)
         if air_date_match:
-            entry['air_date'] = air_date_match.group(0).strip()
-            value = re.sub(re.escape(entry['air_date']), '', value).strip()
+            # entry['air_date'] = air_date_match.group(0).strip()
+            raw_air_date = air_date_match.group(0).strip()
+            formatted_air_date = '-'.join(raw_air_date.split())
+            entry['air_date'] = formatted_air_date
+            value = re.sub(re.escape(raw_air_date), '', value).strip()
             entry['television'] = True
             entry['tv_show'] = True
             if cleaners['clean_tv']:
