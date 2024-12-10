@@ -10,7 +10,7 @@ Docker Compose Example
 services:
   EZPZTV:
     container_name: ezpztv
-    image: xaque87/ezpztv:threadfin
+    image: xaque87/ezpztv_threadfin:latest
     environment:
       - PUID=1000 # Defaults 1000 if blank.
       - PGID=1000 # Defaults 1000 if blank.
