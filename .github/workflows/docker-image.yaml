@@ -3,9 +3,9 @@ name: Build and Push Docker Image
 on:
   push:
     branches:
-      - '**'
-    branches-ignore:
-      - '**/exclude-*'
+      - 'main'
+      - 'ezpztv'
+      - 'ezpztv_threadfin'
   pull_request:
     branches-ignore:
       - '**/exclude-*'
