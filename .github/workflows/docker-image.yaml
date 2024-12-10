@@ -25,24 +25,24 @@ jobs:
             echo "Error: .docker_version file not found!" >&2
             exit 1
           fi
-          
+
           # Read key-value pairs from the file
-          while IFS='=' read -r key value; do
+          while IFS='=' read -r key value || [ -n "$key" ]; do
             case "$key" in
               'last_version') LAST_VERSION="$value" ;;
               'new_version') NEW_VERSION="$value" ;;
             esac
           done < .docker_version
-          
+
           # Validate the presence of required keys
           if [ -z "$LAST_VERSION" ] || [ -z "$NEW_VERSION" ]; then
             echo "Error: Missing required keys in .docker_version file!" >&2
             exit 1
           fi
-          
+
           echo "last_version=$LAST_VERSION"
           echo "new_version=$NEW_VERSION"
-          
+
           # Compare versions and set the environment variable
           if [ "$LAST_VERSION" = "$NEW_VERSION" ]; then
             echo "Version unchanged ($NEW_VERSION). Skipping build."
