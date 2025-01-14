@@ -194,7 +194,14 @@ def prepare_m3us(URLS, m3u_dir, m3u_file_path, skip_header=None):
 
     print(f"All files have been combined into {m3u_file_path}")
 
-
+    # Check if the combined m3u file has 3 or fewer lines
+    print("Checking the combined m3u file for line count...")
+    with open(m3u_file_path, 'r') as m3u_file:
+        print("Reading the combined m3u file for line count...")
+        lines = m3u_file.readlines()
+        print(f"Lines in the combined m3u file: {len(lines)}")
+        if len(lines) <= 1:
+            raise ValueError(f"The m3u file {m3u_file_path} has 3 or fewer lines. Aborting.")
 
 # def prepare_m3us(URLS, m3u_dir, m3u_file_path):
 #     for vodurl in URLS:
