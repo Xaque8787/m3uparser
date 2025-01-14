@@ -15,7 +15,16 @@ def main():
         # Set up logging
         vars(setup_logging, variables_all, 'log_file')
         # Download & concatenate all m3u urls
-        vars(prepare_m3us, variables_all, 'URLS', 'm3u_dir', 'm3u_file_path', 'skip_header')
+        try:
+            vars(prepare_m3us, variables_all, 'URLS', 'm3u_dir', 'm3u_file_path', 'skip_header')
+        except ValueError as e:
+            print(e)
+            print("Skipping remaining functions and waiting to rerun...")
+            vars(clean_up, variables_all, 'm3u_dir', 'm3u_file_path', 'master_mov_dir', 'master_tv_dir',
+                 'master_unsorted', 'live_tv', 'livetv_file', 'live_tv_dir', 'UNSORTED', 'local_unsorted')
+            vars(run_timer, variables_all, main, 'HOURS')
+            return  # Exit early to avoid running subsequent functions
+
         # Parse the m3u file and get a list of dictionaries containing key-value pairs
         entries, errors = vars(parse_m3u_file, variables_all, 'm3u_file_path', clean_group_title, process_value,
                                'REPLACE_TERMS', 'REPLACE_DEFAULTS', 'SCRUB_HEADER', 'SCRUB_DEFAULTS', 'REMOVE_TERMS',
