@@ -23,16 +23,25 @@ class ThreadfinWebSocketClient:
     def send_wizard(self, ws):
         try:
             print(self.m3u_url)
-            wizard_request = {
-                "wizard": {
-                    "EpgSource": "XEPG",
-                    "M3U": self.m3u_url,
-                    "Tuner": 1,
-                    "XMLTV": ""
+            m3u_request = {
+                "files": {
+                    "m3u": {
+                        "-": {
+                            "buffer": "-",
+                            "tuner": 1,
+                            "name": "Live_TV",
+                            "description": "Parsed Live TV Streams",
+                            "file.source": self.m3u_url,
+                            "http_proxy.ip": "",
+                            "http_proxy.port": "",
+                            "http_headers.origin": "",
+                            "http_headers.referer": ""
+                        }
+                    }
                 },
-                "cmd": "saveWizard"
+                "cmd": "saveFilesM3U"
             }
-            ws.send(json.dumps(wizard_request))
+            ws.send(json.dumps(m3u_request))
         except Exception as e:
             print(f"Error sending wizard data: {e}")
 
@@ -97,6 +106,7 @@ class ThreadfinWebSocketClient:
                     "authentication.m3u": True,
                     "authentication.api": True,
                     "api": True,
+                    "EpgSource": "XEPG",
                     'ignoreFilters': True,
                     "enableNonAscii": True
                 },
@@ -159,7 +169,7 @@ def run_websocket_operations():
     client = vars(ThreadfinWebSocketClient, variables_all, m3u_url=None, epg_url='epg_path', port='port',
                   thread_user='main_user', thread_pass='main_pass', token=None, host='host')
     ws = create_connection(client.ws_url)
-    print("WebSocket connection established.")
+    # print("WebSocket connection established.")
 
     try:
         # Call the send methods
@@ -182,8 +192,8 @@ def run_websocket_operations():
 
             # Print the filtered result
             filtered_result = {
-                "clientInfo": json_result.get("clientInfo"),
-                "data": json_result.get("data"),
+                # "clientInfo": json_result.get("clientInfo"),
+                # "data": json_result.get("data"),
                 "settings": settings
             }
             print(json.dumps(filtered_result, indent=4))
