@@ -76,7 +76,7 @@ def variables_all(process_env_variable, str_to_bool, process_env_special, *args)
         'banner_file': os.path.join(root_dir, f'branding/web/assets/img'),
         'local_mov_dir': f'/mnt/jellyfin/movies',
         'master_mov_dir': f'{root_dir}/Movie_VOD',
-        'local_tv_dir': f'/mnt/jellyfin/series',
+        'local_tv_dir': f'/mnt/jellyfin/tv',
         'master_tv_dir': f'{root_dir}/TV_VOD',
         'master_unsorted': f'{root_dir}/Unsorted_VOD',
         'local_unsorted': f'{root_dir}/VODS/Unsorted_VOD',
