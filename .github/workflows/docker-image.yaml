@@ -6,6 +6,7 @@ on:
       - 'main'
       - 'ezpztv'
       - 'ezpztv_threadfin'
+      - 'm3uparser_mess'
   pull_request:
     branches-ignore:
       - '**/exclude-*'
