@@ -58,7 +58,7 @@ services:
 mkdir m3uparser
 cd m3uparser
 curl -o docker-compose.yaml https://raw.githubusercontent.com/Xaque8787/m3uparser/main/m3uparser/docker-compose.yaml
-curl -o ezpztv.env https://raw.githubusercontent.com/Xaque8787/m3uparser/main/m3uparser/m3uparser.env
+curl -o m3uparser.env https://raw.githubusercontent.com/Xaque8787/m3uparser/main/m3uparser/m3uparser.env
 ```
 
 Then edit the m3uparser.env file with your credentials and desired values.
