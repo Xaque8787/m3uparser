@@ -119,12 +119,16 @@ def move_files(file_path, destination_path):
 
 
 def prepare_m3us(URLS, m3u_dir, m3u_file_path, skip_header=None):
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"
+    }
+
     for vodurl in URLS:
         try:
             # If skip_header is True, skip the header checks and download directly
             if skip_header:
                 print('Skipping url header check.')
-                response = requests.get(vodurl)
+                response = requests.get(vodurl, headers=headers)
                 print(f"GET request to {vodurl} returned status code: {response.status_code}")
 
                 if response.status_code == 200:
@@ -141,7 +145,7 @@ def prepare_m3us(URLS, m3u_dir, m3u_file_path, skip_header=None):
                 continue  # Skip the rest of the loop for this URL and go to the next one
 
             # Default behavior: check headers before downloading
-            response = requests.head(vodurl)
+            response = requests.head(vodurl, headers=headers)
             print(f"HEAD response headers for {vodurl}: {response.headers}")
             print(f"HEAD request to {vodurl} returned status code: {response.status_code}")
 
@@ -150,7 +154,7 @@ def prepare_m3us(URLS, m3u_dir, m3u_file_path, skip_header=None):
                 content_disposition = response.headers.get('content-disposition')
 
                 if content_type and 'filename=' in (content_disposition or ''):
-                    response = requests.get(vodurl)
+                    response = requests.get(vodurl, headers=headers)
                     print(f"GET request to {vodurl} returned status code: {response.status_code}")
 
                     if response.status_code == 200:
