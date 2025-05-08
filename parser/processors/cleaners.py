@@ -156,7 +156,7 @@ def process_value(value, replace=None, remove_header=None, remove_terms=None):
     if remove_header:
         for header_term in remove_header:
             # print("\nProcessing header term from header value:", header_term)
-            pattern = re.compile(r'.*?\b{}\s*'.format(re.escape(header_term)), flags=re.IGNORECASE)
+            pattern = re.compile(r'.*?{}\s*'.format(re.escape(header_term)), flags=re.IGNORECASE)
             match = pattern.search(value)
             if match:
                 value = value[match.end():].strip()
