@@ -2,17 +2,33 @@ import os
 import re
 from dotenv import load_dotenv
 
+
 # Process functions for environment variables
 def process_env_variable(env_var_value):
     if isinstance(env_var_value, str):
-        # Use regex to split on commas not preceded by a backslash
-        items = re.split(r'(?<!\\),', env_var_value.strip('"'))
+        # print("DEBUG raw input:", repr(env_var_value))
 
-        # Remove any backslashes used for escaping commas and strip whitespace
-        processed_value = [item.replace(r'\,', ',').strip() for item in items if item.strip()]
+        # Strip symmetrical outer quotes if both are present
+        if (
+            len(env_var_value) >= 2
+            and env_var_value[0] == env_var_value[-1]
+            and env_var_value[0] in ("'", '"')
+        ):
+            env_var_value = env_var_value[1:-1]
+
+        # Split on unescaped commas
+        items = re.split(r'(?<!\\),', env_var_value)
+
+        # Unescape sequences like \, and \"
+        processed_value = [
+            re.sub(r'\\(.)', r'\1', item).strip()
+            for item in items if item.strip()
+        ]
 
         return processed_value
-    return env_var_value
+
+
+
 
 # def process_env_variable(env_var_value):
 #     if isinstance(env_var_value, str):
