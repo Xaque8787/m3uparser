@@ -19,7 +19,7 @@ services:
       - SCRUB_HEADER= # Optional, add more/different scrub values, does not override the defaults
       - EXCLUDE_TERMS= # Optional, exclude content that has defined term in the group-title value in m3u
       - REMOVE_TERMS= # Optional, add more/different remove term values, does not override the defaults
-      - REPLACE_TERMS # Optional, add more/different replace values, does not override the defaults
+      - REPLACE_TERMS= # Optional, add more/different replace values, does not override the defaults
       - CLEANERS= # Optional, add more/different cleaner values, does not override the defaults
       - CLEAN_SYNC= # If set to true will remove titles from VOD folders that are not present in m3u files, Defaults to false if blank.
       - LIVE_TV= # Default is true, true will make a combined livetv.m3u from all live tv streams in M3U_URL
@@ -170,18 +170,22 @@ Key=Value pairs are made from each item in the EXTINF line. The values are then 
 ## Examples and Explanations
 
 ### SCRUB_HEADER
+The `group-title` value often contains more information than just the TV show or Movie name. The `SCRUB_HEADER` values work by matching the first instance of the given values in the `group-title` string, and removing the values and anything that precedes it. The goal is to use a common string found amongst the `group-title` values.
 
-Example: `SCRUB_HEADER="HD :, SD :"`. This removes these values, if they exist, and any preceding text from the `group-title` line. So a line like this, `group-title="Movie VOD",HD : The Fall Guy 2024` will become `group-title= The Fall Guy 2024`. Ensure spaces are included where needed. Add multiple values to `SCRUB_HEADER=`, separated by commas, in a single set of quotes. You can escape charcters like , or " but using a \ `SCRUB_HEADER="Movie VOD\,"`
+Example: `SCRUB_HEADER="HD :, SD :"`. This removes these values,`HD :` and `SD :`, if they exist, and any preceding text from the `group-title` line. So a line like this, `group-title="Movie VOD",HD : The Fall Guy 2024` will become `group-title= The Fall Guy 2024`. Ensure spaces are included where needed. Add multiple values to `SCRUB_HEADER=`, separated by commas, in a single set of quotes.
+Note that any quotes that exist in the `group-title` are stripped before the `SCRUB_HEADER` is applied, so they do not need to be included in the SCRUB_HEADER value.
 
 **ESCAPING SPECIAL CHARACTERS**
 
-You can escape charcters like `,` or `"` bY using a `\` like this `SCRUB_HEADER="Movie VOD\,"` If you need to escape a `"` that string must not be the first or last in the defined list, and you may need to add "dummy" values to avoid this. So if your group-title looks like this `group-title="Movie VOD",The Fall Guy 2024`, your SCRUB_HEADER value should look like this `SCRUB_HEADER="dummyvalue, \"Movie VOD\"\,, fakevalue"`
+You can escape characters like `,` by using a `\` So if your `group-title` looks like this `group-title="Movie VOD",The Fall Guy 2024`, your SCRUB_HEADER value should look like this `SCRUB_HEADER="\,"` So this finds the first instance of a `,` and then removes it and anything that precedes it.
 
 Default is set to: `SCRUB_HEADER="HD :, SD :"`
 
 ### REMOVE_TERMS & CLEANERS
 
-`REMOVE_TERMS` removes specified terms, and any attatched text, from titles. For instance, `REMOVE_TERMS="x264"`, would remove the entire string `x264-somegarbge`. This setting is case-sensitive and should have multiple values separated by commas, in a single set of quotes. i.e `REMOVE_TERMS="x264, h264, X264"`
+`REMOVE_TERMS` removes specified terms, and any attached text, from titles. For instance, `REMOVE_TERMS="x264"`, would remove the entire string `x264-somegarbge`. This setting is case-sensitive and should have multiple values separated by commas, in a single set of quotes. i.e `REMOVE_TERMS="x264, h264, X264"`
+
+A common format seen is to put qualities and language tag in sets of brackets like this `[EN]` or `[h265]`. To remove all of these use a `REMOVE_TERM="["`
 
 Default is set to: `"720p, WEB, h264, H264, HDTV, x264"`
 
@@ -201,9 +205,9 @@ Set `LIVE_TV=true` to generate a `livetv.m3u` file with all live TV streams from
 
 Default is set to: `LIVE_TV=true`
 
-If you supply url(s) to the `EPG_URL=` variable, they will be added as xmltv guide data in the server. Put value inside double quotes, and seperate urls with a comma.
+If you supply url(s) to the `EPG_URL=` variable, they will be added as xmltv guide data in the server. Put value inside double quotes, and separate urls with a comma.
 
-`EPG_URL= https://epgurl1.com, http://anotherepg.com"`
+`EPG_URL= "https://epgurl1.com, http://anotherepg.com"`
 
 ### REFRESH_LIB
 
