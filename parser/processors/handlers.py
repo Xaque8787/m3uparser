@@ -266,7 +266,6 @@ def prepare_m3us(URLS, m3u_dir, m3u_file_path, skip_header=None):
 # sync_directories with remove from src if not in dest
 def sync_directories(src, dest, remove_sync):
     if remove_sync:
-        # print("Clean_Sync results:")
         for item in os.listdir(src):
             src_item = os.path.join(src, item)
             dest_item = os.path.join(dest, item)
@@ -280,6 +279,12 @@ def sync_directories(src, dest, remove_sync):
                 if not os.path.exists(dest_item):
                     shutil.copy2(src_item, dest_item)
                     print(f"Added content: {dest_item}")
+                else:
+                    # Check if contents differ
+                    with open(src_item, 'rb') as f_src, open(dest_item, 'rb') as f_dest:
+                        if f_src.read() != f_dest.read():
+                            shutil.copy2(src_item, dest_item)
+                            print(f"Updated content: {dest_item}")
 
         # Remove files and directories in dest that are not in src
         for item in os.listdir(dest):
@@ -306,6 +311,12 @@ def sync_directories(src, dest, remove_sync):
                 if not os.path.exists(dest_item):
                     shutil.copy2(src_item, dest_item)
                     print(f"Content added: {dest_item}")
+                else:
+                    # Check if contents differ
+                    with open(src_item, 'rb') as f_src, open(dest_item, 'rb') as f_dest:
+                        if f_src.read() != f_dest.read():
+                            shutil.copy2(src_item, dest_item)
+                            print(f"Content updated: {dest_item}")
 
 # def sync_directories(src, dest):
 #     for item in os.listdir(src):
