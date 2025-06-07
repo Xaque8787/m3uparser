@@ -108,6 +108,7 @@ class ThreadfinWebSocketClient:
                     "api": True,
                     "EpgSource": "XEPG",
                     'ignoreFilters': True,
+                    "dummy": True,
                     "enableNonAscii": True
                 },
                 "cmd": "saveSettings"
