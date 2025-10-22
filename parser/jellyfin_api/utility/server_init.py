@@ -214,7 +214,7 @@ def rebrand_title(logo_file):
         # Define file paths
         file1 = f'{logo_file}/main.jellyfin.bundle.js'
         file2 = f'{logo_file}/index.html'
-        file3 = f'{logo_file}/73233.d08d0c3a593dcbf1c7c7.chunk.js'
+        #file3 = f'{logo_file}/73233.d08d0c3a593dcbf1c7c7.chunk.js'
 
         # Define replacements
         replacements = [
@@ -223,11 +223,12 @@ def rebrand_title(logo_file):
             ]),
             (file2, [
                 (r'<title>Jellyfin</title>', '<title>EZPZTV</title>')
-            ]),
-            (file3, [
-                (r'document\.title="Jellyfin"', 'document.title="EZPZTV"'),
-                (r'document\.title=e\|\|"Jellyfin"', 'document.title=e||"EZPZTV"')
             ])
+            #,
+            #(file3, [
+            #    (r'document\.title="Jellyfin"', 'document.title="EZPZTV"'),
+            #    (r'document\.title=e\|\|"Jellyfin"', 'document.title=e||"EZPZTV"')
+            #])
         ]
 
         for file_path, file_replacements in replacements:

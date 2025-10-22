@@ -46,10 +46,12 @@ def ezpztv_setup():
         vars(copy_png_files, variables_all, 'banner-light.png', 'images_file', 'banner_file')
         vars(copy_png_files, variables_all, 'banner-dark.png', 'images_file', 'banner_file')
         vars(copy_png_files, variables_all, 'banner-light.png', 'images_file', 'banner_file')
+        vars(copy_png_files, variables_all, 'banner-dark.31011bc0c5e6acb07879.png', 'images_file', 'logo_file')
+        vars(copy_png_files, variables_all, 'banner-light.b113d4d1c6c07fcb73f0.png', 'images_file', 'logo_file')
         vars(copy_png_files, variables_all, 'icon-transparent.png', 'images_file', 'banner_file')
         vars(copy_png_files, variables_all, 'favicon.png', 'images_file', 'logo_file')
-        vars(copy_png_files, variables_all, 'baba78f2a106d9baee83.png', 'images_file', 'logo_file')
-        vars(copy_png_files, variables_all, 'bc8d51405ec040305a87.ico', 'images_file', 'logo_file')
+        vars(copy_png_files, variables_all, 'icon-transparent.baba78f2a106d9baee83.png', 'images_file', 'logo_file')
+        vars(copy_png_files, variables_all, 'favicon.bc8d51405ec040305a87.ico', 'images_file', 'logo_file')
         vars(copy_threadfin_files, variables_all, 'config.json', 'images_file', 'logo_file',
              'application_version')
 
