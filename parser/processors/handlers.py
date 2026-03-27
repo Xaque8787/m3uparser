@@ -144,10 +144,10 @@ def prepare_m3us(URLS, m3u_dir, m3u_file_path, skip_header=None):
                     print(f"GET request failed for {vodurl} - Status code: {response.status_code}")
                 continue  # Skip the rest of the loop for this URL and go to the next one
 
-            # Default behavior: check headers before downloading
-            response = requests.head(vodurl, headers=headers)
-            print(f"HEAD response headers for {vodurl}: {response.headers}")
-            print(f"HEAD request to {vodurl} returned status code: {response.status_code}")
+            # Default behavior: check headers before downloading (using GET request)
+            response = requests.get(vodurl, headers=headers)
+            print(f"GET response headers for {vodurl}: {response.headers}")
+            print(f"GET request to {vodurl} returned status code: {response.status_code}")
 
             if response.status_code == 200:
                 content_type = response.headers.get('Content-Type')
